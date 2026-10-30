@@ -151,6 +151,7 @@ LLM（Claude Haiku 5.5）が指示を色の順に分け、VLA（SmolVLA）が俯
   5. 配置位置による目標条件付けの学習と評価: `scripts\place_relearn\place_data.py manifest` → `convert` → `scripts\place_relearn\train_place.py --dataset … --start` → `scripts\api\plan_success_relearn.py --stage-p --rplace-ckpt …` → `scripts\place_relearn\run_place_eval.ps1` → `scripts\api\judge_success_relearn.py check-p`
   6. 追加の試み: `scripts\success_relearn\`（自分の成功した試行も足す）、`scripts\chunk_select\`（候補から選ぶ）、判定は `scripts\api\judge_success_relearn.py`
 - 自分の失敗から学び直す評価は 2 台の PC で 100 通りずつ回した（2 台目の分は名前が `_b` で終わる計画）。自分の成功した試行も足したモデルの評価は 1 台で 200 通りの初期状態。配置位置による目標条件付けの評価（600 通りの初期状態）は、2 台の PC が共有のフォルダの印で 18 個の計画を取り合って回した。GPU の推論の計算はわずかに揺れるので、回し直した結果は完全には一致しない。
+- 評価と学習の起動の道具の一部（`scripts\chunk_select\`・`place_relearn\`・`rtc\`・`success_relearn\` の `.ps1` と、前の段のモデルを読む `.py`）は、評価に使ったままの形で入れたので、作者の PC の作業場所の絶対パスを既定値に持つ。自分の PC で回すときは、引数かファイルの先頭の値を自分の場所に替える。
 
 ## AI 支援の使用
 

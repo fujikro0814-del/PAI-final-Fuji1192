@@ -193,5 +193,5 @@
 | 合わせた世界の確かめ（腕の再生との比べ、幅のセンサ） | `scripts/real/check_real_matched.py` |
 | 作り直しの計画・試しの 30 本・本番の生成とデータの確かめ | `scripts/real/regen_data.py` |
 | `Rreal`・`Nreal` の学習 | `scripts/real/regen_train.py` |
-| 第 5 節の評価と判定（2 つの独立な数え方で集計） | `scripts/real/regen_test.py` |
+| 第 5 節の評価と判定（2 つの独立な数え方で集計） | 開発用のリポジトリの `scripts/real/regen_test.py`（前の段の評価の道具とつながっているので、このリポジトリには入れていない） |
 | 開閉の指令の平滑化 | `scripts/real/eval_real_matched_grip.py` |

@@ -216,7 +216,7 @@ LLM の組み直しなしの条件は「基本＋手順の切り替え」、あ�
 | [`scripts/real/compare_replay.py`](../scripts/real/compare_replay.py)・[`real_to_ds.py`](../scripts/real/real_to_ds.py)・[`build_replay_zip.py`](../scripts/real/build_replay_zip.py)・[`resim_replay.py`](../scripts/real/resim_replay.py) | 実機の記録とシミュレーションを比べる、学習データと同じ列の表にする、実機側の PC へ渡す zip を作る、応答を計算し直す。`compare_replay.py`・`real_to_ds.py` は python3 と numpy だけで動く |
 | [`scripts/real/gen_real_matched.py`](../scripts/real/gen_real_matched.py) | 合わせた世界でデータを試しに生成する |
 
-再生の列の形は [`real/replay_format.md`](real/replay_format.md)、合わせた世界は [`real/v3_real.md`](real/v3_real.md)、記録は [`real/`](real/)。
+再生の列の形は [`real/replay_format.md`](real/replay_format.md)、合わせた世界は [`real/README.md`](real/README.md) の 2 節と [`configs/v3_real.yaml`](../configs/v3_real.yaml)、記録は [`real/`](real/)。
 
 ### 3.8 図と動画
 
