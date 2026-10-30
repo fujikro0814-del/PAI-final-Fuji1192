@@ -1,0 +1,52 @@
+# 別のタスク「カップを皿に置く」の場面（設計書 docs/design/task_api.md の付記「別のタスク: カップを皿に」）。
+# 読むのは場面と評価の側だけ（src/recovla/sim/scene.py の cup_plate・src/recovla/harness/world_cup_plate.py・
+# src/recovla/api/harness/goal_truth.py）。実行系（知覚・スクリプト・実行器）は読まない（tests/api/test_cup_plate.py で検査）。
+# 寸法は assets/mjcf/scene_cup_plate.xml と同じ（tests でモデルと照合する）。机の上面は z = 0（configs/default.yaml の sim.table_top_z）。
+cup_plate:
+  xml: assets/mjcf/scene_cup_plate.xml
+  cup:                        # 上が開いた円筒（取っ手なし）。体の原点は底の中心、体の z が上向き
+    body: cup
+    radius: 0.03              # 外の半径（外径 6 cm）
+    height: 0.08
+    wall: 0.0045              # 壁の厚さ
+    base: 0.005               # 底の厚さ
+    segments: 16              # 壁を並べる細い箱の数
+    rgba: [1.0, 0.0, 0.0, 1.0]          # 赤（runtime/perception の色の閾値で赤に入る。scene.colors.red と同じ）
+  plate:                      # 机に固定の平らな円板。体の原点は底の中心（机の上）
+    body: plate
+    radius: 0.09
+    thickness: 0.012
+    rgba: [0.9, 0.75, 0.2, 1.0]         # 黄（箱と同じ色。runtime/perception の箱の黄の切り出しに入る）
+  material:                   # カップと皿は陶器（作者の指定 2026-10-18。assets/mjcf/scene_cup_plate.xml と同じ値、scene.py で照合）
+    friction: [0.5, 0.005, 0.0001]   # 滑り・回り・転がり。滑りの 0.5 は判断の値: 釉薬のかかった陶器は硬く滑らかでガラスに近い
+                                     # （Engineering ToolBox のガラスどうしの乾いた滑り 0.4。陶器の行は無い）。立方体・机の 1.0 の半分
+    # MuJoCo の接触の係数は 2 つの geom の大きい方。摩擦は組の性質なので、陶器どうし・陶器と机の組を 0.5 にする:
+    # 机（XML に書く）と皿を 0.5。指（当て板は陶器でない）は立方体の実験と同じ 1.0 のまま＝指とカップの組は 1.0。
+    # partner_bodies に体を書くと、その体の geom の滑りの係数も読み込みの後にこの値以下へ下げる（今は空）。
+    # 10/18 の試し: 指も 0.5 にすると、運び始めと皿へ下ろす途中でカップが指から滑り、C の捨てた割合が 20% になった
+    # （outputs/gen/CP_pilot_20261018-214152）。priority は使わない（接触の固さもカップの既定に替わり、指の当て板の
+    # finger_pad_solref が効かず掴みが全部失敗した）
+    partner_bodies: []
+  layout:                     # 置き方の抽選（sim/scene.sample_cup_plate_layout。配置の乱数列 stream(seed, "layout")）
+    plate_region: {x: [0.42, 0.50], y: [0.20, 0.28]}    # 皿の中心（3 色の場面の箱のまわり）
+    cup_region: {x: [0.36, 0.54], y: [-0.18, 0.02]}     # カップの中心（3 色の場面の立方体の範囲の中）
+    yaw_range_deg: 180        # 向きは ±この値の一様（カップ・皿とも回転の対称だが、抽選の形を立方体とそろえる）
+    min_gap_m: 0.03           # カップの外の縁と皿の縁の間の最小の隙間（中心間の距離 ≥ 皿の半径 ＋ カップの半径 ＋ これ）
+    max_tries: 200
+  success:                    # 成功の真値（評価だけ）: カップが皿の上に載って立っている
+    radius_margin_m: 0.015    # 底の中心が、皿の上面の円の半径 − これ の内側（カップの半径の半分）
+    contact_tol_m: 0.005      # 底の高さと皿の上面の差がこれ以内（接している）
+    max_tilt_deg: 15.0        # カップの軸と鉛直のなす角がこれ以下（立っている）
+  vla_setup:                  # VLA の腕（U0・L2v2）と手本役のデータ作りへ渡す既知の情報（「VLA 側の既知の値」。CL2 は読まない）
+    box_wall: 0.005           # 箱の欄に皿: 内寸 = 皿の上面の円に内接する正方形（半分 = 半径 / √2）。外寸 = 内寸 ＋ 壁 × 2
+    object_width: 0.06        # 既知の情報の cube_size に入れる（ハンドの grasp の幅。runtime/runner・harness/driven が読む）
+    object_height: 0.08       # 箱の欄の底 = 皿の上面 ＋ 高さ − 幅（JudgeV2 の「底 ＋ 一辺 = 置いた物の上面」がカップで合うように）
+    cue_height: 0.04          # 方策の目標位置の入力の投影の平面の高さ（机から。カップの中心）。立方体は cube_size の半分（2 cm）
+  expert:                       # 手本役（expert/script.py の段階の決まり、真値で動く。expert/cup_plate.py が読む）
+    grasp_tip_z: 0.055          # 掴む指先の中心の高さ（机から）: 手のひら（指先より 3.25 cm 上）がカップの縁 8 cm の 0.75 cm 上
+    release_clear_m: 0.005      # 放す: カップの底が皿の上面のこれだけ上に来る高さで開く（グリッパを開く高さ = 皿の上面 ＋ これ ＋ 掴む指先の高さ）
+    place_jitter_m: 0.01        # 置き場所: 皿の中心 ＋ ±これの一様（スクリプトの乱数列から 1 回）
+    data_upright_max_deg: 5.0   # 学習データに残す成功: 評価の成功（傾き 15° 以下）に加えて、最後の傾きがこれ以下（傾けて置く癖を
+                                # 学ばせない。カップは上下が決まった物で、伏せた・倒れた置き方はタスクにならない。10/18 の 240 本は最大 0.0015°）
+    # 接近・搬送の高さ（approach_height・carry_z 0.25）・持ち上げ（lift_m）・待機位置は configs の expert のまま（指先 0.147 m は
+    # カップの縁 0.08 m の上、運ぶカップの底 0.092 m は皿の上面 0.012 m の上）

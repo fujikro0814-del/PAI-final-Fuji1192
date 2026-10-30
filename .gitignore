@@ -1,0 +1,18 @@
+# Git 管理外。公開リポジトリなので、ここに足すときは慎重に
+/.tools/
+/.python/
+/.venv/
+/.cache/
+/.local/
+/models/
+/outputs/
+/docs/local/
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# 説明資料と動画の出来上がり（提出物。scripts/paper_pdf.py・video_common.py で作る）
+/paper/build/
+/.venv_viz/

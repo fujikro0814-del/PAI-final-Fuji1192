@@ -1,0 +1,94 @@
+{
+ "note": "G1 の既知の違反（scripts/check_real_boundary.py が数える）。減らすだけ。関門 1 で空にする（0106）",
+ "violations": {
+  "src/recovla/policy/runner.py": {
+   "key:x_des": 2
+  },
+  "src/recovla/policy/scene_policy.py": {
+   "import:recovla.eval.closed_loop": 1
+  },
+  "src/recovla/eval/closed_loop.py": {
+   "attr:contact": 1,
+   "attr:controller": 6,
+   "attr:cube_vadr": 4,
+   "attr:gripper_closed": 1,
+   "attr:integrator": 6,
+   "attr:qpos": 2,
+   "attr:qvel": 2,
+   "attr:scratch": 1,
+   "attr:xpos": 2,
+   "key:box": 1,
+   "key:cube_linvel": 1,
+   "name:rig": 29
+  },
+  "src/recovla/data/vla_state.py": {
+   "key:fingers": 2
+  },
+  "src/recovla/data/convert.py": {
+   "import:recovla.sim.scene": 1,
+   "key:fingers": 1,
+   "key:gripper_closed": 1,
+   "key:target": 5,
+   "key:x_des": 2
+  },
+  "src/recovla/perception/color.py": {
+   "attr:cam_xmat": 1,
+   "attr:cam_xpos": 1,
+   "import:recovla.sim.frames": 1
+  },
+  "src/recovla/planner/detect.py": {
+   "import:recovla.sim.frames": 1,
+   "key:box": 4
+  },
+  "src/recovla/planner/judge.py": {
+   "key:box": 1
+  },
+  "src/recovla/planner/executor.py": {
+   "attr:controller": 1,
+   "attr:cube_ids": 5,
+   "attr:cube_vadr": 1,
+   "attr:finger_vadr": 1,
+   "attr:gripper_closed": 1,
+   "attr:integrator": 4,
+   "attr:qvel": 2,
+   "attr:scratch": 1,
+   "attr:x_cmd": 4,
+   "attr:xpos": 5,
+   "import:recovla.eval": 1,
+   "import:recovla.expert.script": 1,
+   "import:recovla.record.episode": 1,
+   "import:recovla.sim.contact": 1,
+   "import:recovla.sim.frames": 1,
+   "import:recovla.sim.rig": 1,
+   "key:contact_robot": 1,
+   "key:gripper_closed": 1,
+   "key:phase": 1,
+   "key:x_des": 1,
+   "name:rig": 56
+  },
+  "src/recovla/sim/safety.py": {
+   "attr:cubes_in_box": 1,
+   "attr:meter": 3,
+   "attr:mj_geomDistance": 1,
+   "attr:qpos": 2,
+   "attr:xpos": 1,
+   "import:recovla.sim.contact": 1,
+   "name:rig": 2
+  },
+  "src/recovla/eval/scene_trial.py": {
+   "attr:controller": 1,
+   "attr:cube_ids": 1,
+   "attr:cube_vadr": 1,
+   "attr:gripper_closed": 1,
+   "attr:qvel": 1,
+   "attr:truth": 2,
+   "attr:xpos": 1,
+   "import:recovla.expert.script": 1,
+   "import:recovla.record.episode": 1,
+   "import:recovla.sim.contact": 1,
+   "import:recovla.sim.rig": 1,
+   "key:phase": 1,
+   "name:rig": 17
+  }
+ }
+}

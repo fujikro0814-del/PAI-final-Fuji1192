@@ -1,0 +1,36 @@
+{
+ "name": "r2ld09",
+ "experiment": "R2LD09",
+ "lanes": 4,
+ "block": 10,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "Ld": {
+   "n": 33,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "R2LD09",
+    "--arm",
+    "Lf",
+    "--condition",
+    "Ld",
+    "--model",
+    "Rdag",
+    "--model-ckpt",
+    "Rdag=outputs/r1/train/train_Rdags1000_20261021-155742_20261021-155742/checkpoints/040000/pretrained_model",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "172168:33",
+    "--min-free-gb",
+    "8",
+    "--finder",
+    "estimated"
+   ]
+  }
+ }
+}

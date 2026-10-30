@@ -1,0 +1,82 @@
+{
+ "name": "r2e_a",
+ "experiment": "R2E",
+ "lanes": 4,
+ "block": 10,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "U0": {
+   "n": 100,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "R2E",
+    "--arm",
+    "U0",
+    "--condition",
+    "U0",
+    "--model",
+    "Rreal",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "171700:100",
+    "--min-free-gb",
+    "8"
+   ]
+  },
+  "Ud": {
+   "n": 100,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "R2E",
+    "--arm",
+    "U0",
+    "--condition",
+    "Ud",
+    "--model",
+    "Rdag",
+    "--model-ckpt",
+    "Rdag=outputs/r1/train/train_Rdags1000_20261021-155742_20261021-155742/checkpoints/040000/pretrained_model",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "171700:100",
+    "--min-free-gb",
+    "8"
+   ]
+  },
+  "U2a": {
+   "n": 100,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "R2E",
+    "--arm",
+    "U0",
+    "--condition",
+    "U2a",
+    "--model",
+    "R2a",
+    "--model-ckpt",
+    "R2a=outputs/r2/train/train_R2as1000_20261023-221311_20261023-221311/checkpoints/010000/pretrained_model",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "171700:100",
+    "--min-free-gb",
+    "8"
+   ]
+  }
+ }
+}

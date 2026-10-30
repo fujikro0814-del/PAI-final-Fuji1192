@@ -1,0 +1,40 @@
+{
+ "name": "r2ce",
+ "experiment": "R2CE",
+ "lanes": 4,
+ "block": 10,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "Uc": {
+   "n": 34,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "R2CE",
+    "--arm",
+    "U0",
+    "--condition",
+    "Uc",
+    "--model",
+    "R2a",
+    "--model-ckpt",
+    "R2a=outputs/r2/train/train_R2as1000_20261023-221311_20261023-221311/checkpoints/010000/pretrained_model",
+    "--select-scorer",
+    "outputs/r2c/eval/scorer_run3.pt",
+    "--select-scorer-sha256",
+    "dac085372aa50ffc21cd11fd2cc907c4f2242febd3cdc2d56330938e37ddd588",
+    "--select-k",
+    "8",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "171700:34",
+    "--min-free-gb",
+    "8"
+   ]
+  }
+ }
+}

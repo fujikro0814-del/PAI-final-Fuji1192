@@ -1,0 +1,13 @@
+# 別のタスク「カップを皿に置く」（設計書 docs/design/task_api.md の付記「別のタスク: カップを皿に」。LIBERO の mug → plate の形）。
+# 場面は assets/mjcf/scene_cup_plate.xml（configs/scenes/cup_plate.yaml）。読むのは src/recovla/api/task_spec.load_task。
+# 物の種類の知識（実行系が使ってよいもの）: カップ＝赤の、上が開いた立った円筒。皿＝黄の、机の上の平らな円板。大きさ・位置・
+# 向き・高さは RGBD から推定する（size_m は書かない）。
+name: cup_plate
+objects:
+  - {name: cup, words: [カップ, マグ], shape: cup, finder: "color:red"}
+places:
+  - {name: plate, words: [皿], kind: surface, finder: "plate:v1"}
+goal: {kind: all_on, objects: [cup], place: plate}
+step_vocab: [pick_place]          # 手順の語彙。pick_place(物, 場所)
+instructions: [カップを皿に置いて]
+policy_instruction: "put the {color} cup on the plate"   # 入口の --vla-text task のときだけ VLA に渡す（既定は今の決まった形）

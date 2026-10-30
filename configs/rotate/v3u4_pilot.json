@@ -1,0 +1,13 @@
+{
+ "name": "v3u4_pilot",
+ "experiment": "V3U4PILOT",
+ "lanes": 3,
+ "block": 10,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "U0_run1": {"n": 30, "argv": ["scripts/real/u4_ladder.py", "run", "--arm", "U0", "--experiment", "V3U4PILOT", "--condition", "U0_run1", "--model", "Rreal", "--trials", "44740:30", "--grip-debounce", "5", "--allow-smoke", "--min-free-gb", "8"]},
+  "U0_run2": {"n": 30, "argv": ["scripts/real/u4_ladder.py", "run", "--arm", "U0", "--experiment", "V3U4PILOT", "--condition", "U0_run2", "--model", "Rreal", "--trials", "44740:30", "--grip-debounce", "5", "--allow-smoke", "--min-free-gb", "8"]},
+  "L2": {"n": 5, "argv": ["scripts/real/u4_ladder.py", "run", "--arm", "L2", "--experiment", "V3U4PILOT", "--condition", "L2", "--model", "Rreal", "--trials", "44770:5", "--grip-debounce", "5", "--allow-smoke", "--min-free-gb", "8"]},
+  "OR": {"n": 5, "argv": ["scripts/real/u4_ladder.py", "run", "--arm", "OR", "--experiment", "V3U4PILOT", "--condition", "OR", "--model", "Rreal", "--trials", "44770:5", "--grip-debounce", "5", "--allow-smoke", "--min-free-gb", "8"]}
+ }
+}

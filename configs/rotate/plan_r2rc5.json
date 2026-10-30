@@ -1,0 +1,44 @@
+{
+ "name": "r2rc5",
+ "experiment": "R2RC5",
+ "lanes": 4,
+ "block": 10,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "LrZ": {
+   "n": 33,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "R2RC5",
+    "--arm",
+    "Lf",
+    "--condition",
+    "LrZ",
+    "--model",
+    "Rplace",
+    "--model-ckpt",
+    "Rplace=outputs/r2c/train_place/train_Rplaces1000_20261028-070452_20261028-070452/checkpoints/040000/pretrained_model",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "171534:33",
+    "--min-free-gb",
+    "8",
+    "--finder",
+    "estimated",
+    "--runtime-mode",
+    "rtc",
+    "--rtc-horizon",
+    "44",
+    "--rtc-schedule",
+    "ZEROS",
+    "--rtc-max-guidance",
+    "5"
+   ]
+  }
+ }
+}

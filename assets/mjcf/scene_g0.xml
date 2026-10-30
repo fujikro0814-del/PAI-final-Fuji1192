@@ -1,0 +1,110 @@
+<mujoco model="panda_scene">
+  <option timestep="0.002" gravity="0 0 -9.81"/>
+
+  <include file="panda/panda.xml"/>
+  <compiler meshdir="panda/assets"/>
+
+  <!-- Plain mid-gray background (2026-09-16): without a skybox the renderer
+       clears to black, and that black void grew/shrank with hand height in
+       the recording cameras. Render-only, no physics effect. -->
+  <asset>
+    <texture name="bg_sky" type="skybox" builtin="flat" rgb1="0.5 0.5 0.5" rgb2="0.5 0.5 0.5"
+             width="32" height="32"/>
+  </asset>
+
+  <worldbody>
+    <!-- Visual-only floor under the table (contype/conaffinity 0): the gray
+         skybox alone left a hard horizon at the table edge in the wrist view.
+         No collision, so falling cubes still pass through to CubeGame's
+         fall_z respawn exactly as before. -->
+    <geom name="floor_visual" type="plane" size="3 3 0.1" pos="0 0 -0.1"
+          rgba="0.45 0.45 0.45 1" contype="0" conaffinity="0"/>
+
+    <!-- Fixed overhead camera "O1" for data collection (2026-09-16). Looks
+         at (0.45, 0.05, 0.05) from the front, distance 1.25 m, elevation
+         -40 deg. Collection and evaluation share it: do NOT move it. -->
+    <camera name="overhead" pos="1.407555 0.05 0.853485"
+            xyaxes="0 1 0 -0.642788 0 0.766044" fovy="45"/>
+
+    <!-- Operator-only orthographic views (2026-09-16), shown in the collect
+         mode's OPERATOR VIEW window and NEVER recorded. Oriented so the
+         DualSense left stick matches the screen: top view has +x (away
+         from the robot) up and +y left; back view looks along +x from
+         behind the robot, +y left and +z up. fovy is the vertical extent in
+         metres for orthographic cameras. Adding cameras does not change
+         what the recording cameras render. -->
+    <camera name="operator_top" pos="0.45 0.05 1.2"
+            xyaxes="0 -1 0 1 0 0" orthographic="true" fovy="0.85"/>
+    <camera name="operator_back" pos="-1.0 0.05 0.25"
+            xyaxes="0 -1 0 0 0 1" orthographic="true" fovy="0.85"/>
+
+    <!-- Table. x half-extent widened 0.6 -> 0.8 (2026-09-16) so a future
+         30 cm initial range (cube x up to 0.60) and dropped/re-grasped
+         cubes near x=0.6 stay on the table instead of falling off the
+         edge. y half-extent unchanged. -->
+    <body name="table" pos="0 0 -0.05">
+      <geom name="table_geom" type="box" size="0.8 0.6 0.05"
+            rgba="0.7 0.7 0.7 1" condim="4" friction="1 0.005 0.0001"/>
+    </body>
+
+    <!-- Single cube (2026-09-16): the red and blue cubes were removed for
+         VLA data collection (one object, fixed instruction), so no unused
+         object ever appears in the recorded cameras. -->
+    <body name="cube_green" pos="0.4 0.0 0.03">
+      <freejoint/>
+      <geom type="box" size="0.02 0.02 0.02"
+            rgba="0 1 0 1" mass="0.05" friction="1 0.005 0.0001"/>
+    </body>
+
+    <!-- Goal box (tray) for the cube-drop game.
+         Inner opening: 0.12 x 0.12 m, wall top at z=0.06.
+         The scoring volume in game.py is defined relative to this
+         body's origin, so moving this body only requires editing pos.
+         Static body (no freejoint) -> contributes 0 to qpos, so it does
+         NOT shift the keyframe layout below. -->
+    <body name="goal_box" pos="0.45 0.25 0">
+      <geom name="box_bottom" type="box" size="0.07 0.07 0.005"
+            pos="0 0 0.005" rgba="0.9 0.75 0.2 1"
+            friction="1 0.005 0.0001"/>
+      <geom name="box_wall_xp" type="box" size="0.005 0.07 0.025"
+            pos="0.065 0 0.035" rgba="0.9 0.75 0.2 1"/>
+      <geom name="box_wall_xn" type="box" size="0.005 0.07 0.025"
+            pos="-0.065 0 0.035" rgba="0.9 0.75 0.2 1"/>
+      <geom name="box_wall_yp" type="box" size="0.07 0.005 0.025"
+            pos="0 0.065 0.035" rgba="0.9 0.75 0.2 1"/>
+      <geom name="box_wall_yn" type="box" size="0.07 0.005 0.025"
+            pos="0 -0.065 0.035" rgba="0.9 0.75 0.2 1"/>
+    </body>
+
+    <!-- Mocap target (transparent, no collision). group="5" (2026-09-16):
+         MuJoCo renders only geom groups 0-2 unless told otherwise, so the
+         sphere never appears in offscreen camera images (wrist/overhead,
+         i.e. anything recorded for VLA training). app.py re-enables group 5
+         for the interactive viewer only, so the operator still sees it. -->
+    <body name="target" mocap="true" pos="0.4 0 0.3">
+      <geom type="sphere" size="0.02" rgba="1 0 0 0.3" group="5"
+            contype="0" conaffinity="0"/>
+    </body>
+  </worldbody>
+
+  <!-- Weld: mocap target -> panda hand -->
+ <!-- <equality>
+  <weld body1="target" body2="hand" solref="0.02 1" solimp="0.9 0.95 0.001"/>
+</equality>
+-->
+
+  <!-- Home keyframe. The MuJoCo viewer's reset (Backspace) restores qpos
+       to the FIRST keyframe if one exists, otherwise to the model's zero
+       pose (arm straight up = singular). qpos layout (nq=16): arm
+       joint1..7, finger_joint1..2, then the cube_green freejoint
+       (pos3 + quat4). goal_box is static and adds nothing to qpos.
+       The 'h' key in app.py does the same reset from code and also
+       re-anchors the mocap target + game state, so prefer 'h'; this
+       keyframe is the Backspace fallback. -->
+  <keyframe>
+    <key name="home"
+         qpos="0 -0.785 0 -2.356 0 1.571 0.785 0.04 0.04
+               0.4 0.0 0.03 1 0 0 0"/>
+  </keyframe>
+
+</mujoco>

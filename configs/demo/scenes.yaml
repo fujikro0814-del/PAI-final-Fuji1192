@@ -1,0 +1,37 @@
+# 動画の場面（scripts/61_demo.py record）。どれもテスト用・検証用の評価の記録と同じ設定で回し直して、発表用カメラで描く。
+# expect は元の記録から決めた「再現した」の条件。source は元の記録（照合に使う）。
+# model: R1＝復帰デモありで学習、N1＝復帰デモなしで学習、R2＝最終モデル（2 段目まで学習）
+checkpoints:
+  R1: outputs/train/train_R1_20260926-153959_20260926-153959/checkpoints/030000/pretrained_model
+  N1: outputs/train/train_N1_20260926-191928_20260926-191928/checkpoints/030000/pretrained_model
+  R2: outputs/train/train_R2_20260927-145256_20260927-145256/checkpoints/010000/pretrained_model
+
+clips:
+  # S4: 意図的な失敗なしの対比（非同期実行）。R1 は掴み損ねから掴み直して成功、N1 は立て直さない
+  - {id: nat_110001_R1, kind: trial, model: R1, mode: naive, seed: 110001, target: green, layout: natural,
+     source: outputs/eval/EFINAL/A_nat, expect: {success: true, grasp_miss: true}}
+  - {id: nat_110001_N1, kind: trial, model: N1, mode: naive, seed: 110001, target: green, layout: natural,
+     source: outputs/eval/EFINAL/B_nat, expect: {success: false, grasp_miss: true}}
+  # 予備（同期実行の組）
+  - {id: nat_110001_R1_sync, kind: trial, model: R1, mode: sync, seed: 110001, target: green, layout: natural,
+     source: outputs/eval/EFINAL/C_nat, expect: {success: true, grasp_miss: true}}
+  - {id: nat_110001_N1_sync, kind: trial, model: N1, mode: sync, seed: 110001, target: green, layout: natural,
+     source: outputs/eval/EFINAL/D_nat, expect: {success: false, grasp_miss: true}}
+  - {id: nat_110016_R1_sync, kind: trial, model: R1, mode: sync, seed: 110016, target: red, layout: natural,
+     source: outputs/eval/EFINAL/C_nat, expect: {success: true, grasp_miss: true}}
+  - {id: nat_110016_N1_sync, kind: trial, model: N1, mode: sync, seed: 110016, target: red, layout: natural,
+     source: outputs/eval/EFINAL/D_nat, expect: {success: false, grasp_miss: true}}
+  # S4 後半・S5: 意図的な失敗 P1（掴む位置をずらして閉じる）。R1 と N1、naive 対 RTC
+  - {id: p1_111004_R1, kind: trial, model: R1, mode: naive, seed: 111004, target: red, layout: induced, induce: P1,
+     source: outputs/eval/EFINAL/A_P1, expect: {established: true, success: true}}
+  - {id: p1_111004_N1, kind: trial, model: N1, mode: naive, seed: 111004, target: red, layout: induced, induce: P1,
+     source: outputs/eval/EFINAL/B_P1, expect: {established: true, success: false}}
+  - {id: p1_111004_R1_rtc, kind: trial, model: R1, mode: rtc, seed: 111004, target: red, layout: induced, induce: P1,
+     source: outputs/eval/EFINAL/E_P1, expect: {established: true, success: false}}
+  # S3: 3 個の連続タスク（最終モデル、待機位置へ戻す動きを入れた実行器）
+  - {id: task_115000, kind: task, model: R2, seed: 115000, text: 全部片付けて,
+     source: outputs/planner/runs/E7_final, expect: {all_three: true, retry_completed: true}}
+  - {id: task_115007, kind: task, model: R2, seed: 115007, text: 全部片付けて,
+     source: outputs/planner/runs/E7_final, expect: {all_three: true, retry_completed: true}}
+  - {id: task_197000_grb, kind: task, model: R2, seed: 197000, text: 緑、赤、青の順に片付けて,
+     source: outputs/planner/runs/E7_ret_GRB, expect: {all_three: true}}

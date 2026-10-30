@@ -1,0 +1,36 @@
+{
+ "name": "r2pp2",
+ "experiment": "R2PP2",
+ "lanes": 4,
+ "block": 10,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "Lp": {
+   "n": 34,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "R2PP2",
+    "--arm",
+    "Lf",
+    "--condition",
+    "Lp",
+    "--model",
+    "Rplace",
+    "--model-ckpt",
+    "Rplace=outputs/r2c/train_place/train_Rplaces1000_20261028-070452_20261028-070452/checkpoints/040000/pretrained_model",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "171434:34",
+    "--min-free-gb",
+    "8",
+    "--finder",
+    "estimated"
+   ]
+  }
+ }
+}

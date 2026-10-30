@@ -1,0 +1,12 @@
+{
+ "name": "v3u4_step_reset",
+ "experiment": "V3U4PILOT",
+ "lanes": 3,
+ "block": 10,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "SR_home": {"n": 30, "argv": ["scripts/real/u4_ladder.py", "run", "--arm", "U0", "--step-reset", "home", "--experiment", "V3U4PILOT", "--condition", "SR_home", "--model", "Rreal", "--trials", "44740:30", "--grip-debounce", "5", "--allow-smoke", "--min-free-gb", "8"]},
+  "SR_rebuild": {"n": 30, "argv": ["scripts/real/u4_ladder.py", "run", "--arm", "U0", "--step-reset", "rebuild", "--experiment", "V3U4PILOT", "--condition", "SR_rebuild", "--model", "Rreal", "--trials", "44740:30", "--grip-debounce", "5", "--allow-smoke", "--min-free-gb", "8"]},
+  "SR_home_rebuild": {"n": 30, "argv": ["scripts/real/u4_ladder.py", "run", "--arm", "U0", "--step-reset", "home_rebuild", "--experiment", "V3U4PILOT", "--condition", "SR_home_rebuild", "--model", "Rreal", "--trials", "44740:30", "--grip-debounce", "5", "--allow-smoke", "--min-free-gb", "8"]}
+ }
+}

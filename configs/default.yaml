@@ -1,0 +1,218 @@
+# すべての設定値（承認 2026-09-25、 の修正を反映）。
+# 以前に自作した遠隔操作と記録の道具の値には出典を併記した。null は Step D 以降で測って決める値。
+# コードに数値を直書きしない（以前の手順-5）。読み込みは recovla.common.config.load。
+
+paths:                       # すべて <ROOT> からの相対
+  models_home: models/hf_home
+  policy_snapshot: models/hf_home/hub/models--lerobot--smolvla_libero/snapshots/31d453f7edd78c839a8bbc39744a292686daf0de
+  outputs: outputs
+  train_output: outputs/train          # 学習の出力先（起動器が <設定名>_<日時> を作る）
+  train_logs: outputs/train_logs       # 学習の標準出力の記録
+  scene_g0: assets/mjcf/scene_g0.xml
+  scene: assets/mjcf/scene_3cube.xml
+
+sim:                         # 以前に自作した遠隔操作と記録の道具 collect.py / closed_loop_eval.py
+  timestep: 0.002            # モデルの値と照合する（食い違えば止める）
+  steps_per_pad_read: 10     # scripted_demo.STEPS_PER_LOOP
+  record_every: 25           # 20 Hz
+  stride: 2                  # 10 fps
+  image_size: 256
+  cameras: [overhead, wrist]
+  settle_s: 3.0
+  start_pos: [0.307, 0.0, 0.35]
+  home_qpos: [0.0, -0.785, 0.0, -2.356, 0.0, 1.571, 0.785]
+  finger_open: 0.04
+  fingertip_offset: 0.1034
+  table_top_z: 0.0
+  png_compression: 1         # 以前に自作した遠隔操作と記録の道具 recorder.PNG_COMPRESSION（PNG は可逆。速さのため 1）
+  workspace: {x: [0.28, 0.62], y: [-0.30, 0.40], z: [0.115, 0.35]}
+
+controller:                  # 以前に自作した遠隔操作と記録の道具 app.make_controller（DLS）と collect の上書き
+  ik_gain: 0.08
+  max_joint_step: 0.03
+  rot_weight: 0.5
+  lock_orientation: true
+  null_gain: 0.05
+  ik_damping: 0.05
+  tracker_omega: 20.0
+  max_target_vel: 0.8
+  q_des_leash: 0.10
+  max_dx_norm: 0.10
+  scale: 1.0
+
+pad:                         # 以前に自作した遠隔操作と記録の道具 dualsense_device.PROFILES["collect"]
+  xy_speed: 0.20
+  z_speed: 0.10
+
+scene:
+  cube_size: 0.04
+  cube_mass: 0.05
+  cube_friction: [1.0, 0.005, 0.0001]
+  colors: {red: [1, 0, 0, 1], green: [0, 1, 0, 1], blue: [0, 0, 1, 1]}
+  box: {pos: [0.45, 0.25, 0.0], inner_half: 0.08, wall_top_z: 0.06, success_inner_half: 0.07, floor_z: 0.01}   # 3 色の場面。内寸 16 cm（。G0 は configs/g0.yaml の 12 cm のまま）
+  region: {x: [0.33, 0.57], y: [-0.21, 0.05]}     # Step D で確定。箱を 16 cm に広げたので y の上限を 0.08 → 0.05 に下げ、幅 0.26 を保って負の側へずらした（0.06 以上では、把持のとき手の下端が箱の手前の壁の上端に触れた）
+  min_center_dist: 0.09
+  yaw_range_deg: 30
+  layout_kinds: {empty: 0.57, prefilled_1: 0.14, prefilled_2: 0.29}
+  start_at_retreat_prob: 0.33
+  box_slots: [[0.04, 0.04], [0.04, -0.04], [-0.04, 0.04], [-0.04, -0.04]]   # 箱の中心からの相対（2x2 の格子、§14 の R3。 で ±4 cm）
+  slot_occupied_radius: 0.03 # 他の立方体の中心が置き場所の中心からこの距離以内なら、その置き場所は埋まっている
+  prefilled_yaw_deg: 0.0     # 先客は置き場所の中心に向き 0 で置いてから静止させる
+  layout_max_tries: 10000    # 配置の棄却抽選の上限（超えたら止める）
+  box_slot_clearance_m: {cube: 0.02, wall: 0.01}   # 着地した立方体どうしの隙間・壁との隙間の下限（mj_geomDistance）。指と壁の隙間は条件にしない（壁の上端より上で放すため）
+  settle_prefilled_s: 1.0    # 配置の後、記録の前に物理を回して静止させる時間（配置の種類によらず同じ）
+  presentation_camera: {name: presentation, width: 1280, height: 720, pos: [1.2, -0.75, 0.75],
+                        xyaxes: [0.72032, 0.693642, 0.0, -0.362773, 0.376726, 0.852334], fovy: 40}
+
+expert:
+  speed_scale: [0.9, 1.1]    # ±10%（speed_ref に掛ける）
+  speed_ref: {xy: 0.18, z: 0.09}   # 基準の速さ [m/s]。1.1 倍しても DualSense の上限（pad.xy_speed 0.20・z_speed 0.10）を超えない
+  gain_per_s: 4.0
+  grasp_jitter_m: 0.003
+  approach_height: 0.25      # 接近の高さ（x_des）。指先は約 0.15 で、机上・箱の立方体の上を通る
+  grasp_z: 0.115             # 以前に自作した遠隔操作と記録の道具 LOW_Z（作業空間の下限）
+  lift_m: 0.05
+  carry_z: 0.25
+  release_z: 0.18            # 以前に自作した遠隔操作と記録の道具 RELEASE_Z
+  retreat_pose: [0.33, 0.15, 0.30]   # 待機位置（x_des）。俯瞰カメラから見て立方体と箱の奥にあり、何も隠さない（Step D で分割描画で確認）。開始姿勢 retreat もここ
+  idle_after_place_s: 1.5
+  move_tol_m: 0.001
+  hand_still_speed: 0.005    # 閉じる・放す前に手（hand 原点）の速さがこれ未満であること [m/s]
+  close_settle_s: 0.3        # 閉じ切りの判定に使う指の速さの持続時間
+  finger_rest_speed: 0.005   # 指の速さ（2 本の和）がこれ未満を「止まった」とする [m/s]
+  slip_retry_max: 3
+  time_limit_s: 40.0         # 生成の 1 回の試みの上限（超えたら打ち切り）
+  phase: {grasped_lift_min_m: 0.01, drop_dist_m: 0.035, rest_speed: 0.01, rest_hold_s: 0.3,
+          above_tol_m: 0.006,      # 目標の真上（x_des の水平位置が目標の中心から、ずれ ±3 mm を含めてこの距離以内）
+          grasp_z_tol_m: 0.004,    # 把持の高さに着いた（x_des の z が grasp_z + この値以下）
+          release_z_tol_m: 0.004,  # グリッパを開く高さに着いた（x_des の z が release_z + この値以下）
+          min_grip_gap_m: 0.02,    # 閉じた指の開き（2 本の和）がこれ未満なら何も掴んでいない
+          retreat_tol_m: 0.003}    # 待機位置に着いた（x_des が待機位置からこの距離以内）
+
+inject:                      # Step F（以前の手順）。recovla.expert.inject
+  A: {lateral_offset_m: [0.025, 0.035], raise_ratio: 0.5, lift_m: [0.03, 0.05],
+      raise_close_m: [0.025, 0.05],  # 振り（outputs/f/sweep.json、 の決まり）で決めた。手順書の 1.5〜2.5 cm は 101/120 が効かなかった
+      confirm: {hand_rise_min_m: 0.03, cube_rise_max_m: 0.01},
+      lift_rise_margin_m: 0.002,   # 持ち上げの目標を hand_rise_min + この値以上にする（手先は目標に漸近するので、ちょうど 3 cm では確定しない）
+      lift_done_tol_m: 0.001,      # 手先の高さが持ち上げの目標からこの距離以内で、手が止まったら確定の判定をする
+      timeout_s: 6.0}              # 発動から確定の判定までの上限（超えたら「意図的な失敗が効かなかった」）
+  B: {min_dist_from_box_m: 0.19}   # 振り（outputs/f/sweep.json）と で決めた。手順書の 0.15 は箱 16 cm では壁に近すぎる（不適切 36.7%）。評価の P2 は Step G で確認する
+  C: {min_clearance_m: 0.03, drop_max_tries: 1000}   # ずらし先は scene.region の一様（配置の範囲なので届き、写る）
+  landing: {max_tilt_deg: 10, min_clearance_m: 0.03, max_invalid_ratio: 0.2,
+            rest_speed: 0.01, rest_hold_s: 0.3, finger_gap_margin_m: 0.005,
+            timeout_s: 5.0,              # 開いてから静止までの上限（超えたら着地が不適切）
+            view_margin_px: 8}           # 俯瞰カメラの画像の縁からこの画素数以上内側に写ること
+  recovery_time_limit_s: 40.0  # 保存を始めてからの立て直しの上限（expert.time_limit_s と同じ値）
+  landing_orientation_split_deg: 30   # 完了条件 1: 落下後の向き（指に対する、90° の対称性を除いた角）±30° 以内とそれ以上に分ける
+
+contact:
+  robot_bodies: [hand, left_finger, right_finger]
+  obstacles: [table_cubes_except_target, box_walls]
+  distmax_m: 0.10            # これより遠い組は distmax を返す（計算の打ち切り）
+  # 最短距離は、native CCD を有効にし当て板を箱形のメッシュにした「距離の計算専用のモデルの写し」で測る
+  # （recovla.sim.contact.distance_model。既定の mj_geomDistance は近い組で最大 30 mm 誤った。Step D で確認）
+
+safety_filter:               # 条件付き（接触率 5% 以上のときだけ作る）。naive の意図的な失敗なし 99 回で 8.1% → 作った（recovla.sim.safety）
+  enabled: true              # 本構成（naive d=4＋安全フィルタ）。方策が指令を出している間だけ効く。E5 の切は 41_results.py --safety off
+  d_min_m: 0.003              # : スクリプトのデモの最短距離の 1 パーセンタイル 5.2 mm より小さく
+  d_detect_m: 0.03            # 同: 参照位置での距離がこれ未満の障害物だけ不等式に入れる
+  gamma: 0.85
+  tracking_lag_margin_m: 0.017   # 参照から手先までの遅延 5〜17mm（落とし穴13）
+
+convert:
+  fps: 10
+  instruction: "put the {color} cube in the box"
+
+train:
+  scope: expert
+  batch_size: 32
+  seed: 1000
+  num_workers: 6
+  log_freq: 50
+  gpu_limit_gib: 14.0
+  lora: {layers: [8, 9, 10, 11, 12, 13, 14, 15], modules: [q_proj, v_proj], r: 16, alpha: 32}   # 。SmolVLM2 のテキスト部（16 層）の上位 8 層
+  first_frames_weight: {frames: 20, weight: 5}   # : 各エピソードの最初の 2 秒（10 fps で 20 フレーム）を 5 倍の重みで引く
+  cue_augment: {prob: 0.5, max_m: 0.02}          # : 学習の試料ごとに確率 0.5 で目標位置の入力に 0〜2 cm・向き一様のずれ（評価では足さない）
+  rename_map: {observation.images.image: observation.images.camera1,
+               observation.images.image2: observation.images.camera2}
+  runs:
+    smoke: {steps: 1000}
+    K1: {steps: 8000, save_freq: 8000}
+    K1_lora: {steps: 8000, save_freq: 8000}      # （LoRA の枝）
+    smoke_lora: {steps: 50, save_freq: 50}       #  の条件 2（保存と推論の経路の一致を確かめる試し）
+    K1_cue: {steps: 8000, save_freq: 8000}       # （目標位置の入力 15 → 18 次元、行動エキスパートのみ）
+    K1_cue_aug: {steps: 8000, save_freq: 8000}   # （K1_cue ＋ 学習時の目標位置の入力のずらし）
+    R1: {steps: 30000, save_freq: 5000}
+    N1: {steps: 30000, save_freq: 5000}
+    second_round: {steps: 10000, save_freq: 5000, optimizer_lr: 3.0e-5,
+                   warmup_steps: 200, decay_steps: 10000, decay_lr: 2.5e-6}   # §10
+
+runtime:
+  mode: naive                # sync | naive | rtc。本構成の非同期の設定を 2026-09-27 に決め直した（scripts/48_rtc_redo.py、outputs/results/rtc_redo_decision.json）: rtc 範囲 40・rtc 範囲 10・naive d=4 のうち、復帰の合計 5・13・19 で naive（RTC なし）。以後 R2 の結果によらず変えない。G2 までの数字は rtc 範囲 40 のもの
+  exec_interval: 10          # s。変えない
+  delay_steps: 4             # d。delay_rule で決めた（R1 の 3 万 ステップ、rtc・s=10、推論 109 回、p95 0.396 s → ceil = 4。outputs/results/dcal.json。）。以後の全評価でこの値（「d=2」の箇所をすべて置き換える）
+  delay_rule: {min_samples: 50, percentile: 95, action_dt_s: 0.1, max_d: 5}   # d = ceil(p95 / 0.1 s)、RTC あり、最初の 1 回を除く。d > 5 なら止めて報告
+  rtc_guidance_horizon: 40   # 2×2 で決めた（ の決まり。outputs/results/rtc_decision.json）。mode が rtc のときだけ使う（本構成は  の決め直しで naive）
+  rtc_schedule: EXP          # 同上。必ず明示（落とし穴16）
+  rtc_max_guidance_weight: 10.0
+  # 評価器（方策の推論）の TF32。以後の評価はすべてこの設定で行う。学習（lerobot-train）は行列積の
+  # TF32 ありで動く（lerobot_train.py が allow_tf32 = True にする）が、評価器は固定してそろえない
+  matmul_tf32: false         # torch.backends.cuda.matmul.allow_tf32（PyTorch の既定。これまでの評価と同じ）
+  cudnn_tf32: true           # torch.backends.cudnn.allow_tf32（PyTorch の既定。これまでの評価と同じ）
+
+eval:
+  time_limit_s: 30
+  success: {rest_speed: 0.01, rest_hold_s: 1.0}
+  error_lift_m: 0.02
+  collateral_move_m: 0.02
+  reaction_close_m: 0.02
+  recovery_lift_m: 0.02
+  P1: {delay_s: 0.3, lateral_offset_m: [0.025, 0.035], confirm_window_s: 2.0, confirm_lift_m: 0.02}
+  P2: {min_dist_from_box_m: 0.19, min_lift_m: 0.05}   # : データの B と揃える（手順書の 0.15 m では下見の実際の失敗 12/20）。学習の範囲の外への汎化は測らない
+  P3: {min_clearance_m: 0.03}
+  induction_min_rate: 0.8
+  swap_mid_drop_m: 0.03      # E6: 判定した地点がどの立方体からもこれ以上離れていれば「中間落ち」（手順書 Step E の 3）
+  # 意図的な失敗なしで起きた失敗の検出（。分類と R2 のの引き継ぎで同じ定義）。recovla.eval.failure_detect
+  failure_detect:
+    grasp_window_s: 3.0      # (i) 掴み損ね: 閉じてからこの時間内に lift_m 持ち上がらない（ で 2.0 → 3.0。P1 の意図的な失敗の 2 s は変えない）
+    lift_m: 0.02             # 持ち上がったとみなす高さ（机の上の静止の高さから）
+    rest_speed: 0.01         # (ii) 落下: 目標の速さがこれ未満で
+    rest_hold_s: 0.3         #          この時間続いた（机の上。Step F の着地の静止と同じ）
+    other_rest_hold_s: 1.0   #          その他の落下はこの時間（ で 0.3 → 1.0。箱の縁で止まってから入る場合を除く）
+    table_z_tol_m: 0.01      #          机の上＝静止の高さからこれ未満。それ以外は「その他の落下」（ (a)）
+    held_dist_m: 0.025       # 把持中＝グリッパが閉で、指先の中心と目標の中心がこれ未満（落下の静止から除く）
+    wrong_color_dist_m: 0.05 # (iii) 誤った色へ接近: グリッパが開で、指先の中心と目標外の机上の立方体の中心（3 次元）
+    stall_hand_speed: 0.01   # (iv) 停滞: 指先の速さがこれ未満
+    stall_finger_speed: 0.005   #        かつ指の速さ（2 本の和）がこれ未満が
+    stall_s: 3.0             #        この時間続いた
+
+seeds:                       # §9 のシード範囲（学習用は 100000 未満、評価は 100000 以上）
+  eval_base: 100000
+  g0: [100000, 100019]       # G0 の照合だけ（以前の実験と同じシード）
+  final_eval: [110000, 189999]
+  selection: [190000, 199999]
+
+planner:
+  model: claude-haiku-4-5
+  temperature: 0.0
+  max_tokens: 1024
+  timeout_s: 30
+  step_timeout_s: 30
+  retry: 1
+  completion_hold_s: 1.0
+  # 色の判定（recovla.perception.color。Step I と K1 の目標位置の入力＝ で共用）。学習データのシード（K1 の
+  # 10000〜10099、100 エピソード・3561 フレーム）だけで決めた（scripts/23_color_fit.py、outputs/k1/color_fit.json）。
+  # 選択用・最終評価用のシードでは調整しない。3 色の画素の F1 の平均 0.937。写っていないのに検出したことは 0 回、
+  # 机の上の立方体なら 1 画素の検出からで位置の差の 95 百分位が 2 cm 以下 → min_pixels 1
+  color_detect: {min_value: 20, min_margin: 40, min_pixels: 1}
+  # Step I。presence は学習用のシード範囲の描画だけで決める（scripts/51_planner.py fit）。null の間は使えない
+  # 51_planner.py fit（outputs/planner/presence_fit.json）。学習データ（R1 の 330 本の生の記録）と、学習用のシード範囲 57000〜57039 で
+  # スクリプトの後に目標を縁・脇・中へ置き直した例だけで決めた。俯瞰の箱 31271/31378、机 1972/1980、手首 160/160
+  presence: {box_min_pixels: 56, table_min_pixels: 3, wrist_min_pixels: 33, wrist_min_fraction: 0.73}
+  judge: {retreat_tol_m: 0.05, still_speed: 0.01}   # 完了判定の待機位置（expert.retreat_pose から 5 cm 以内、x_des の速さ 1 cm/s 未満）
+  # 待機位置へ戻す動き（。予備評価の結果を見た後の変更）。planner.executor の ReturnMotion と (a)(b)。
+  # 真上に rise_z まで上げてから水平に expert.retreat_pose へ（速さはスクリプトと同じ）。trigger_s は (b) の条件が続く時間、
+  # wait_s は (b) で着いた後に完了判定を待つ時間（判定の 1 s 静止＋余裕）、timeout_s は動きの上限（着かなくても打ち切る）
+  return_to_retreat: {enabled: true, rise_z: 0.30, trigger_s: 4.0, wait_s: 2.0, timeout_s: 10.0}
+
+viz: {fps: 30}

@@ -1,0 +1,10 @@
+# 自動で書いた値（scripts/83_perception_check.py colors）。センサのモデルの画像で学習用のシードから決めた色の閾値。
+# 知覚・完了判定・方策の目標位置の入力の色の判定に共通。学習時の閾値（planner.color_detect）とは別に記録する
+runtime_v2:
+  color_detect:
+    min_value: 20
+    min_margin: 70
+    min_pixels: 1
+derived_from:
+  colors: colors_v1.json
+  written: '2026-09-29 15:30:47'

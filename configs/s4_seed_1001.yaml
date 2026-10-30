@@ -1,0 +1,5 @@
+# 段階 4 束 3: 学習のシードの複製（シード 1001）。scripts/train_seed.py が default.yaml の上に重ねる。
+# 変えるのは train.seed だけ（学習データ・手順・ステップ数・バッチは R1v3・N1v3 のまま）。
+# 重ねたあとの設定が default.yaml と train.seed 以外で一致することを、包み側が毎回確かめる。
+train:
+  seed: 1001

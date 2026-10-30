@@ -1,0 +1,371 @@
+{
+  "_comment": [
+    "段階 4 の関門 1（束 1 の学習なしの診断）の数値を機械が読める形にしたもの。",
+    "読むのは: 束 1 の二重集計役（判定の機械的な当てはめ）、規則役・批判役の点検、事前登録の掲示。",
+    "書くのは規則役だけ。結果を見た後に書き換えない（掲示の SHA-256 と照合する）。変えるときは新しい版（s4_gates_v2.json など）を作り、掲示板で理由を出す。",
+    "出どころ: docs/local/strategy_20261008/final.md（束 1 の関門 1、束 4 の関門）、critique.md（#1・#2・#4・#6 を採用済みとして反映）。docs/目標書_段階4.md の第 8 節と対応する。",
+    "W = R\\docs\\local\\strategy_20261008\\work（final.md の略記と同じ解析の出力の写し。docs/local はコミットされない。記録の実体はこの下にあるが、回すときの入力にはしない）。"
+  ],
+  "schema": "recovery_vla.s4_gates/1",
+  "version": "v1-draft",
+  "status": "draft_unregistered",
+  "status_note": "草案。D1 の承認 → docs/目標書_段階4.md をコミット → SHA-256 を掲示 → タグ stage4-charter-v1（メインが付ける）の後に有効になる。それまでは実行の根拠に使わない。",
+  "written": "2026-10-08",
+  "revision": [
+    {"id": "r1", "date": "2026-10-08", "by": "規則の直し役", "what": "作者の決定『60 秒統一』（10/08 01:59）と GPU ドライバの更新（10/08 02:00、560.94 -> 610.88）に合わせた。制限時間・採点の時間・関門 C と K の採点・計算量・環境の記録を直した。関門の数値は変えていない。どの関門もまだ回していない（結果を見る前の直し）。"},
+    {"id": "r2", "date": "2026-10-08", "by": "規則の直し役（作者の決定の反映）", "what": "作者の決定（10/08）に合わせた。(1) 主な指標を 30 s の採点に戻した（単発の試行は 60 s で回したまま、60 s の採点と時間ごとの曲線は副次、45 s は記述だけ。final.md 550 行『延長した持ち時間を主な採点にしない』と一致）。関門 C の主な採点を 30 s、K の d0 を 30 s（主）・60 s（副）、R.c3 を 30 s の採点にした。誘発の試行の L 秒の採点の分母を『誘発が L 秒以内に成立した試行』に限った（批判役の指摘）。(2) E7 の 1 手順の持ち時間を段階 3 と同じ 30 s・全体の上限 200 s に戻し、計算量を計算し直した。(3) 01:45〜02:45 の窓と 17:00 の確認を必須から外した。(4) X2 の生成の帯を 44404〜44423 に移した。関門の数値は変えていない。どの関門もまだ回していない（結果を見る前の直し）。"}
+  ],
+  "time_limits": {
+    "_note": "docs/目標書_段階4.md 第 3-1 節。単発の試行（診断・テスト。E7 以外）はすべて 60 s で回す。E7（3 個の連続タスク）は段階 3 と同じ 1 手順 30 s・やり直し 1 回・全体 200 s（改訂 2、作者の決定 10/08）。これまでの方針の 55 s は使わない。",
+    "trial_time_limit_s": 60,
+    "trial_time_limit_applies_to": "単発の試行（自然・誘発・移植の腕など。96_s4_resume.py run の既定 --time-limit-s 60）",
+    "e7_step_attempt_timeout_s": 30,
+    "e7_retry": 1,
+    "e7_overall_limit_s": 200,
+    "e7_overall_limit_note": "harness/task_loop.py の time_limit_s の既定 200 s（段階 3 と同じ）。段階 3 の E7 では効いていない（t_end 最大 136.3 s、timed_out 0/20）。効いた件数（timed_out）を報告し、1 件でも効いたら逸脱として書く",
+    "e7_config_note": "凍結した configs/default.yaml（planner.step_timeout_s: 30、retry: 1）と同じ値。96_s4_resume.py task の既定（--step-timeout-s 30、--task-time-limit-s 200）で渡し、使った値は試行の json の time_limits に残る",
+    "e7_time_history": "改訂 1（10/08 01:59 の『60 秒統一』）では 1 手順 60 s・全体 400 s 以上にしたが、改訂 2（作者の決定 10/08）で段階 3 と同じ 30 s・200 s に戻した。理由: 段階 3 の 6/20 とそのまま比べるため。止まる主な原因は 2 番目の手順で動けなくなることで、時間切れではない",
+    "scoring": {
+      "primary_s": 30,
+      "primary_note": "作者の決定（10/08）。final.md 550 行『延長した持ち時間を主な採点にしない（採点の変更であって方策の改善ではない。副次にとどめる）』と一致する。30 s の採点は段階 3 と同じ定義",
+      "secondary_preregistered": ["60 s の採点（単発。同じ 60 s の記録から）", "時間ごとの成功率の曲線（成功時刻の分布。単発は成功時刻、E7 は手順ごとの完了の時刻と 3 個とも収まった時刻）"],
+      "descriptive_only": ["45 s の採点"],
+      "switch_rule": "主な指標を 60 s の採点に切り替えてよいのは、テスト 1 の事前登録（帯 160000〜 を回す前）までに限る。切り替えたら docs/目標書_段階4.md 第 10 節の例外の一覧に書く。結果を見た後には切り替えない",
+      "rescoring_rule": "単発の試行は、60 s で回した記録の成功時刻 t_success <= L で L 秒の採点を出す（harness/loop.py 107・118 行。制限時間が効くのは打ち切りと成功時刻の判定だけ）",
+      "induced_denominator_rule": "誘発の試行（P1〜P3・D-復帰・テスト 1 の P1）を L 秒で採点するときの分母は、誘発が L 秒以内に成立した試行（記録の induce.t_established <= L）。30 s の採点はこれで段階 3 と同じ定義になる（段階 3 は 30 s で打ち切ったので、成立はすべて 30 s 以内）。60 s の採点は 60 s 以内に成立した試行が分母。96_s4_resume.py score の at[L].denominator が数える",
+      "e7_scoring": "E7 は段階 3 と同じ 1 手順 30 s・全体 200 s で回すので、記録の 3 個とも（真値）がそのまま段階 3 と同じ定義の採点（主）になる。60 s の採点はない。時間ごとの曲線（手順ごとの完了の時刻と 3 個とも収まった時刻）は副次。段階 3 の 6/20 とはドライバが違うことを書く"
+    },
+    "gate_impact": "R・T・S・XPL の主な指標は最初の閉じで決まり、制限時間に依存しない（数値は変えない）。成功数を使う R.c3 は同じ制限時間の腕どうしの比較で、30 s の採点（主）で当てはめる。T.c3 は E7（1 手順 30 s）の本数。C は 30 s の採点を主、60 s を副にし、数値は変えない。K は d0 を 30 s（主）と 60 s（副）で出し、どちらかが 0.364 を超えたら警告。束 4 の関門 2・3 も 30 s の採点を主にし、数値は変えない"
+  },
+  "environment": {
+    "_note": "docs/目標書_段階4.md 第 5-1 節・第 10 節 16",
+    "stage3_gpu_driver": "560.94（R\\docs\\local\\strategy_20261008\\diag_integrity.md 94 行）",
+    "stage4_gpu_driver": "610.88（10/08 02:00 の Windows Update による。nvidia-smi。torch 2.11.0+cu126 で CUDA 動作確認済み）",
+    "rule": "段階 4 の測定（物差し K を含む）はすべて新ドライバで行う。比べる組はどちらも新ドライバで回す。物差し K は段階 4 の中の比較に使う。段階 3 の数字との直接の比較にはドライバの差が入り、分けられないことを書く。実行ごとにドライバ・OS・torch/CUDA・git の SHA を記録し、途中で変わったら別の環境として分けて報告する",
+    "layers": {
+      "i": "方策を通さない部分（CPU）。影響しない見込み（推測）。段階 3 の記録との照合で一致しなければ環境の差として報告し、原因を調べるまでその部分を使わない",
+      "ii": "凍結版と新版を同じプロセス（同じドライバ）で通すので比較には入らない。基準は変えない",
+      "iii": "比べる組はどちらも新ドライバ。物差し K は新ドライバで測る。前例 0.364 との比較は同じ定義の 30 s の採点の d0（主）で行い、ドライバの差は分けられないと書く"
+    }
+  },
+  "every_gate_has_stop_branch": true,
+  "result_dependent_gates": "なし。下のどの関門も、数値・分母・順位の付け方・やめる枝を、結果を見る前の今ここで固定している。結果を見た後に決めるものは fields_decided_after_results に列挙した。",
+
+  "bands": {
+    "_note": "帯は final.md の束 0 の表と束 0・1 の使い道。台帳役が docs/種の台帳.md と全形式の記録で未使用を確かめるまで『予約』。前回の方針の 150000 番台は取り消し（欠番）。160000〜169999 は台帳の『110000〜189999 最終評価用』の中にあり、台帳役が行を足す。",
+    "classes": [
+      {"id": "test",          "range": [160000, 169999], "use": "段階 4 のテスト（各構成について一度だけ）"},
+      {"id": "research_test", "range": [170000, null],   "use": "研究のテスト（1 万ずつ、一度だけ）"},
+      {"id": "s4_stage1_val", "range": [190100, 190999], "use": "S4 の段階 1（学習なしの診断）の検証用。目標書の段階 1 とは別"},
+      {"id": "s4_stage2_val", "range": [191100, 191999], "use": "S4 の段階 2（実行器 v3・RTC の設定）の検証用"},
+      {"id": "bundle4_gate",  "range": [192100, 192999], "use": "束 4（データの改造）の関門 2・3"},
+      {"id": "reserve",       "range": [193300, 193999], "use": "予備（落ちた試行を同じ種で回し直す場合だけ）"},
+      {"id": "smoke_data",    "range": [44400, 44799],   "use": "smoke・データ生成（学習用の帯。smoke はここだけ）"}
+    ],
+    "withdrawn": [{"range": [150000, 159999], "reason": "前回の方針（strategy_20261007）の割り当てを取り消し。欠番"}],
+    "allocations": [
+      {"id": "K",           "range": [190100, 190132], "seeds": 33, "trials_per_seed": 3, "use": "物差し K: R1v3 自然 99 試行（33 種 x 3 色）を同じ種で 2 回"},
+      {"id": "E7_speed",    "range": [190150, 190155], "seeds": 6,  "use": "E7 の速さ: 3 本並行で 6 本"},
+      {"id": "D_RTC",       "range": [190200, 190209], "seeds": 10, "trials_per_seed": 3, "use": "D-RTC: 6 設定 x 30 試行（同じ種）"},
+      {"id": "D_RTC_shadow","range": [190220, 190223], "seeds": 4,  "trials_per_seed": 3, "use": "影の推論: 誘導しない塊を同じ観測・同じ雑音で並べて記録（12 試行）"},
+      {"id": "D_E7",        "range": [190300, 190339], "seeds": 40, "use": "D-E7: E0 を 2 回、EH・ES・EO を各 1 回（同じ 40 種）。条件つきで EX（実行系の作り直し）を足す"},
+      {"id": "D_single_start","range": [190400, 190410], "seeds": 11, "trials_per_seed": 3, "use": "D-単発の開始: 6 条件（開始 3 x 先客 2）で同じ種、33 試行/条件"},
+      {"id": "D_transplant","range": [190420, 190439], "seeds": 20, "use": "『移植』の腕: E7 の 2 番目の始めの状態 20 個（種 190420+i が E7 の run_{i:04d} に対応）x 3 通り x 2 回"},
+      {"id": "D_recovery",  "range": [190500, 190549], "seeds": 50, "use": "D-復帰: R1v3・N1v3 x 4 通り（落下そのまま・落下で手を止める・置き損ね・把持失敗）、60 s で回し 30 s（主）と 60 s（副）で採点"},
+      {"id": "seed_copy_health","range": [190600, 190632], "seeds": 33, "use": "種の複製（束 3）の健全性の確認: 種 1001・1002 の R・N の自然試行。崩れても H2 に含めて報告する（事前に決定）"},
+      {"id": "X2_gen",      "range": [44404, 44423],   "seeds": 20, "use": "X2: 学習に使っていないエキスパートの記録の生成（学習用の帯。学習には入れない）。smoke で使った 44400〜44403 を避けて 44404〜 に移した（改訂 2、10/08）"},
+      {"id": "bundle2_confirm","range": [191100, 191159], "seeds": 60, "use": "束 2 の確認 B1: R1v3 に今の実行器と v3 を対で。N1v3 + v3 は 191100〜191129（critique #7 の『(a) だけ』の腕は採用済みの項目に入っていないので、ここでは割り当てない。足すなら束 2 の事前登録で同じ帯の中から決める）"},
+      {"id": "bundle2_rtc_ext","range": [191200, 191222], "seeds": 23, "use": "束 2 B2: 関門 R の上位 2 設定を自然 99 試行まで延長（190200〜190209 の 30 試行に加える）"},
+      {"id": "bundle2_p1",  "range": [191300, 191349], "seeds": 50, "use": "束 2 B2: P1 50"},
+      {"id": "bundle6_u4",  "range": [191400, 191499], "seeds": 100, "use": "束 6 (ii): LLM による再計画（任意。記述だけ、Holm の族に入れない）。u4_protocol v2 で 100 種に広げた（改訂 3。191440〜191499 は s4_stage2_val の中の割り当てのない所）"},
+      {"id": "bundle4_gate2","range": [192100, 192999], "use": "束 4 の関門 2・3（この中の細かい割り当ては束 4 の事前登録 v2 で、回す前に決める）"},
+      {"id": "test1_E7",    "range": [160000, 160149], "seeds": 150, "use": "テスト 1: E7（今の実行器の R1v3／v3 の R1v3／v3 の N1v3 を各 150 本）。本数は D2 で確定"},
+      {"id": "test1_natural","range": [161000, 161065], "seeds": 66, "trials_per_seed": 3, "use": "テスト 1: 自然（198 試行）"},
+      {"id": "test1_P1",    "range": [162000, 162099], "seeds": 100, "use": "テスト 1: P1（60 s で回し 30 s を主、60 s を副に採点。分母は誘発がその時刻までに成立した試行）"},
+      {"id": "P2_2_demo",   "range": [163000, 163019], "seeds": 20, "use": "束 5 P2-2: 指示を変えた実演（5 文 x 4 配置。評価の数字にしない）"},
+      {"id": "test2_E7",    "range": [164000, 164149], "seeds": 150, "use": "テスト 2: E7（開始状態の場合）"},
+      {"id": "test2_natural","range": [165000, 165065], "seeds": 66, "use": "テスト 2: 自然"},
+      {"id": "test2_P1",    "range": [166000, 166099], "seeds": 100, "use": "テスト 2: P1"},
+      {"id": "test2_drop",  "range": [167000, 167099], "seeds": 100, "use": "テスト 2: 落下（滑りの場合）"},
+      {"id": "test2_misplace","range": [168000, 168099], "seeds": 100, "use": "テスト 2: 置き損ね（P3。滑りの場合。副次・記述だけで Holm の族に入れない。改訂 4、掲示板 0165）"}
+    ]
+  },
+
+  "metrics": {
+    "first_close_lift":   {"ja": "2 番目の手順の 1 回目の閉じで持ち上がった割合", "denominator": "2 番目の手順が始まった試行（E7）、または単発で最初の閉じが起きた試行", "e7_reference": "5/20（W\\ceiling_skeptic\\sk5_out.txt。1 番目の手順は 20/20）"},
+    "plus_y_shift":       {"ja": "最初の閉じで +y に 1 cm を超えてずれた割合", "denominator": "最初の閉じが起きた試行", "e7_reference": "22/27（W\\upper_skeptic\\e7_first_grasp.json）", "single_standby_start_reference": "2/30（中央値 -1.08 cm、向きは逆）"},
+    "all_three_true":     {"ja": "3 個とも（真値）", "denominator": "E7 の全試行", "e7_reference": "6/20（判定では 4/20）"},
+    "radial_gap_mm":      {"ja": "最初に閉じた位置の半径方向の差。負は手前で止まったこと", "aggregate": "全試行の中央値", "reference": "A -4.8、E -35.9（W\\review_researcher\\r1_out.json）"},
+    "move_ratio":         {"ja": "移動の比＝指令した水平移動 / 必要な移動", "aggregate": "出どころ W\\rtc\\a3_summary.json の集計の定義に合わせる（中央値か平均かは二重集計役が実装前に掲示。結果を見る前に確定する）", "reference": "A 0.99、E 0.78、同期の C 1.01"},
+    "seam_jump_mps":      {"ja": "継ぎ目での速度の跳び", "reference": "E 0.0135、A 0.0244、継ぎ目以外 0.0136〜0.0137（W\\rtc\\a1_summary.json）"},
+    "recovery_30s":       {"ja": "復帰（30 s で採点。主。段階 3 と同じ定義）。60 s の記録から t_success <= 30 で出す。分母は誘発が 30 s 以内に成立した試行（induce.t_established <= 30）", "stage3_reference": "段階 3（30 s・旧ドライバ）: 把持失敗 16/32、落下 2/38、置き損ね 5/36", "also": "45 s は記述だけ"},
+    "recovery_60s":       {"ja": "復帰（60 s で採点。副次）。分母は誘発が 60 s 以内に成立した試行（induce.t_established <= 60）", "stage3_reference": "段階 3 には 60 s の記録がない"},
+    "success_time_curve": {"ja": "時間ごとの成功率の曲線（成功時刻の分布）。副次として事前に登録"},
+    "natural_success_30": {"ja": "自然の試行の成功（30 s の採点。主）"},
+    "natural_success_60": {"ja": "自然の試行の成功（60 s の採点。副次）"},
+    "discordance_d":      {"ja": "回し直しの食い違い率＝同じ試行の 2 回の成否が食い違った試行数 / 試行数。段階 4 は 30 s の採点（主。d0_30）と 60 s の採点（副。d0_60）で出す", "precedent": "0.193（88 対）、0.364（22 対）、別のモデルどうし 0.28（W\\integrity_skeptic\\verify.json。いずれも 30 s・旧ドライバ 560.94）"},
+    "_time_note": "first_close_lift・plus_y_shift・radial_gap_mm は最初の閉じで決まり、制限時間に依存しない（30 s より後に最初の閉じが起きた試行数を報告）。move_ratio・seam_jump_mps は区間を集めるので、関門は比べる腕どうしで同じく最初の 30 s に限った値（主。段階 3 の基準値と同じ区間）で当てはめ、60 s の記録全体の値を副に出す（改訂 2。主な指標を 30 s に戻したのに合わせた）"
+  },
+
+  "gates": {
+    "R": {
+      "name": "RTC",
+      "bundle": 1,
+      "runs": {"band": "D_RTC + D_RTC_shadow + X2_gen", "settings": ["current_repro", "paper_formula_range44_cap5", "range40_cap5", "range10_cap5", "ZEROS", "naive"], "trials_per_setting": 30, "shadow_trials": 12},
+      "primary_metrics": ["radial_gap_mm", "move_ratio"],
+      "report_only_metrics": ["descent_horizontal_correction_all_trials", "far_miss_reopen_time"],
+      "report_only_reason": "30 試行では naive と同じ設定でも 35% と 11% で落ちるため（W\\review_researcher\\r1_out.json）。看板にも条件にもしない",
+      "candidates": "naive と current_repro を除く 4 設定（paper_formula_range44_cap5、range40_cap5、range10_cap5、ZEROS）。naive は基準。current_repro は崩れた基準で、採っても変化がない",
+      "continue": {
+        "all_of": [
+          {"id": "R.c1", "metric": "radial_gap_mm", "rule": "設定の中央値 >= naive の中央値 - 10 mm"},
+          {"id": "R.c2", "metric": "move_ratio", "rule": ">= 0.95"},
+          {"id": "R.c3", "metric": "natural_success_30", "rule": "設定の成功数（30 s の採点）>= naive の成功数（同） - 4"},
+          {"id": "R.c4", "metric": "seam_jump_mps", "rule": "<= 0.019"}
+        ],
+        "action": "R.c1〜c4 を全部満たす設定のうち、次の順位で上位 2 つを束 2 の B2 へ送る",
+        "ranking": ["成功数が多い", "継ぎ目の速度の跳びが小さい", "半径方向の差の絶対値が小さい", "なお同じなら設定の宣言順（paper_formula、range40、range10、ZEROS）"]
+      },
+      "stop_branch": {
+        "when": "R.c1〜c4 を全部満たす設定が 0 個",
+        "action": "RTC の設定の調整をやめる。束 5 の F0（本文の書き直し）だけを行う。B2 は回さない"
+      },
+      "branching_rule": [
+        {"id": "R.b1", "when": "影の推論の『先の計画が naive より 15 mm 以上短い』と、X2 の『10・20・30・40 行先のどれかで予測の不足が 15 mm 以上』が両方出る", "action": "学習時の RTC（arXiv 2512.05964）を研究の道の R-3 へ回す。R の合否とは独立に適用する"},
+        {"id": "R.b2", "when": "上位 2 つが 1 つしかない（合格が 1 設定）", "action": "その 1 設定だけを B2 へ送る"}
+      ],
+      "size_rationale": "30 試行で、naive と同じ設定は半径方向の差の条件を 100% 通過し、現行の RTC は 0%（W\\review_researcher\\r1_out.json）。成功の差は 30 試行では判別力が低いので『-4/30 以内』の足切りにとどめ、主な判定は仕組みの指標（差・移動の比）で行う。",
+      "decided_before_results": ["6 設定の定義", "R.c1〜c4 の数値", "候補の範囲と順位の付け方", "R.b1 の 15 mm", "report_only の扱い"],
+      "decided_after_results": ["上位 2 設定がどれか（規則で決まる）"],
+      "known_issue": "ZEROS と paper_formula の設定の中身（範囲・上限・段数）は実装役が実行前に掲示する。掲示後に変えない。"
+    },
+
+    "T": {
+      "name": "連続タスク（2 番目の手順の始めに戻す）",
+      "bundle": 1,
+      "runs": {"band": "D_E7", "n_per_arm": 40, "time": "1 手順の試み 30 s、やり直し 1 回、全体の上限 200 s（段階 3 と同じ。全腕で同じ。time_limits）","arms": {"E0": "今の実行器。同じ 40 種で 2 回（E0_run1、E0_run2）", "EH": "学習の home の関節角 [0, -0.684, 0, -2.907, 0, 2.216, 0.785] へ、関節空間で制限層を通して戻す", "ES": "学習の待機位置の始めの姿勢（z 0.314）へ戻す", "EO": "緑 → 赤 → 青の順（診断だけ。段階 4 の計画役 Haiku 5.5 で 1 回呼びキャッシュ。温度は送れないので同じ答えはキャッシュで保証。応答のモデル名を記録）"}, "conditional_arm": "EX（S の分岐で足す。手順の切り替えで実行系を作り直す）"},
+      "primary_metrics": ["first_close_lift", "plus_y_shift"],
+      "secondary_metrics": ["all_three_true", "success_by_judge", "mean_stored_count", "success_at_k", "intervention_counts_by_kind"],
+      "reference_rule": {
+        "E0_ref_lift": "max(E0_run1 の first_close_lift, E0_run2 の first_close_lift)。大きいほうを基準にして、通りにくい側に倒す",
+        "d_E0": "|E0_run1 の first_close_lift - E0_run2 の first_close_lift|",
+        "required_margin": "max(0.25, d_E0 + 0.10)",
+        "reason": "critique #6: E7 の回し直しのぶれを測っていない。ぶれが大きい回ほど要求を上げる"
+      },
+      "continue": {
+        "for_arm_in": ["EH", "ES"],
+        "all_of": [
+          {"id": "T.c1", "metric": "first_close_lift", "rule": "その腕の値 >= 0.60"},
+          {"id": "T.c2", "metric": "first_close_lift", "rule": "その腕の値 >= E0_ref_lift + required_margin"},
+          {"id": "T.c3", "metric": "all_three_true", "rule": "その腕の 3 個とも（真値）の本数 >= E0_run1 と E0_run2 の大きいほうの本数"}
+        ],
+        "action": "EH と ES の両方が合格したときは first_close_lift が大きいほうの戻し先を束 2 の v3 (a) へ送る（同じなら EH）。片方だけ合格ならその戻し先"
+      },
+      "stop_branch": {
+        "when": "EH も ES も T.c1〜c3 を満たさない",
+        "action": "戻し先では直らないと見て、関門 S の結果へ進む（候補の選び方は candidate_selection）。v3 の (a) は束 2 に入れない（(b)〜(d) の確認は別に行う）"
+      },
+      "branching_rule": [
+        {"id": "T.b1", "when": "EO の『緑を 1 番目にしたときの 1 回目の閉じの持ち上がり』が 0.60 以下", "action": "緑そのものが弱いと見て、弱い層（根元の帯の緑・青）のデータを研究の道へ。提出物の道では束 4 の理由にしない（弱い層単独では学習の理由にしない）"},
+        {"id": "T.b2", "when": "d_E0 > 0.20", "action": "E7 の回し直しのぶれが大きいので、D2 の前に E7 の試行数を計算し直す（e7_sample_size_rule）。T の判定自体は required_margin のとおり"}
+      ],
+      "size_rationale": "40 本で 0.25 -> 0.60 の検出力 0.94（W\\plan_gated\\g1_gate_sizing.json）。独立 2 標本の正確検定で規則役が確かめた値は 0.91（scratchpad の簡易計算、n=40 対 40）。ぶれの床は D-E7 の E0 2 回で測る。",
+      "decided_before_results": ["腕の定義", "T.c1〜c3 の数値", "E0_ref_lift と required_margin の式", "EO の閾値 0.60"],
+      "decided_after_results": ["E7 の試行数（e7_sample_size_rule の提案を D2 で承認）"]
+    },
+
+    "S": {
+      "name": "単発の開始（critique #1 の直しを反映）",
+      "bundle": 1,
+      "runs": {"band": "D_single_start + D_transplant", "factorial": {"start_pose": ["home", "standby_start", "standby_end"], "prior_cube": ["on_grid", "wall_side"], "trials_per_condition": 33, "seed_sharing": "6 条件で同じ種（190400〜190410 x 3 色）", "standby_end_definition": "z 0.3036 と学習データの『終わり』の関節角（W\\task3\\s13_start_vs_end_pose.json）", "wall_side_definition": "方策が置いたような壁際（E7 の先客の位置の分布。実装役が実行前に掲示）"}},
+      "primary_metric": "plus_y_shift",
+      "secondary_metrics": ["first_close_lift"],
+      "removed": "『home・格子の上より 15 ポイント以上低い』の枝は消した（待機位置から始めると単発でも落ちることが記録で分かっており、E7 特有の上乗せと関係なくほぼ自動で通るため。critique #1）",
+      "contrasts": {
+        "pose_effect": {"id": "S.pose", "ja": "姿勢の効き", "fix": "先客を格子の上にそろえる", "compare": "standby_end 対 standby_start", "value": "plus_y_shift(standby_end) - plus_y_shift(standby_start)", "replication_check": "先客＝壁際でも同じ向きの差が出ること（報告。判定には使わない）"},
+        "prior_effect": {"id": "S.prior", "ja": "先客の効き", "fix": "姿勢を standby_end にそろえる", "compare": "wall_side 対 on_grid", "value": "plus_y_shift(wall_side) - plus_y_shift(on_grid)", "replication_check": "姿勢＝standby_start・home でも差を報告（判定には使わない）"},
+        "home_reference": "home は基準として回すが、判定の枝には使わない"
+      },
+      "effect_present_rule": {
+        "all_of": [
+          {"rule": "対比の高いほうの plus_y_shift >= 0.40"},
+          {"rule": "対比の差 >= 0.25"},
+          {"rule": "同じ種の 33 対で、片側のフィッシャーの正確検定 p < 0.05（ふるい。主張の検定ではない）"}
+        ],
+        "reference": "E7 は 22/27 = 0.81、単発の待機位置始まりは 2/30 = 0.07（W\\upper_skeptic\\e7_first_grasp.json）"
+      },
+      "continue": "『移植』の腕（transplant_arm）の確認と合わせて candidate_selection の順に当てはめる。S 単独では候補を決めない",
+      "stop_branch": {
+        "when": "S.pose も S.prior も effect_present_rule を満たさず、かつ移植の腕も原因を示さない",
+        "action": "開始状態のデータは提出物の道で作らない（研究の道へ）。提出物の道で効かせられるのは束 2 の実行器だけになる。束 4 は開始状態の要因を扱わない"
+      },
+      "branching_rule": "candidate_selection を参照",
+      "size_rationale": "1 条件 33 試行。独立 2 標本の片側フィッシャーの正確検定で、0.60 対 0.15 の検出力 0.98、0.50 対 0.15 は 0.89、0.45 対 0.20 は 0.60（規則役の簡易計算、n=33 対 33）。差 0.25 ちょうどは検出力が低いので、ふるいとして扱い、移植の腕で確かめる。",
+      "decided_before_results": ["対比の定義とそろえ方", "effect_present_rule の数値", "home を判定に使わないこと", "壁際・格子上の定義の掲示（実装役が回す前に）"],
+      "decided_after_results": []
+    },
+
+    "C": {
+      "name": "落下（手を止める版）",
+      "bundle": 1,
+      "runs": {"band": "D_recovery", "models": ["R1v3", "N1v3"], "variants": ["fall_as_is", "fall_with_hold", "misplace", "grasp_failure"], "seeds": 50, "time_limit_s": 60, "scored_at_s": [30, 45, 60], "main_scored_at_s": 30, "secondary_scored_at_s": 60, "descriptive_scored_at_s": 45, "compute_note": "60 s では落下・置き損ねが 30 s の記録の約 1.80〜1.95 倍、把持失敗は R 1.43・N 1.80（budget_notes）。7.3（final.md）-> 10.0（critique、55 s）-> 10.8 プロセス時間（60 s）"},
+      "gate_variant": "fall_with_hold",
+      "gate_variant_definition": "落下で手を止める版＝着地の後の観測から作った塊が動き始めるまで指を開いたまま保つ。診断専用で、テストの誘発は段階 3 と同じ",
+      "primary_metrics": ["recovery_30s", "R_minus_N_recovery_30s"],
+      "secondary_metrics": ["recovery_60s", "R_minus_N_recovery_60s", "success_time_curve"],
+      "secondary_note": "60 s の採点は同じ表に並べるが、判定には使わない",
+      "denominator": "誘発が 30 s 以内に成立した試行（induce.t_established <= 30。副次の 60 s の採点では 60 s 以内）。R-N は R・N の両方で成立した種の対（約 38〜50 件）",
+      "continue": {
+        "all_of": [
+          {"id": "C.c1", "rule": "fall_with_hold の R の 30 s の復帰 >= 0.20"},
+          {"id": "C.c2", "rule": "fall_with_hold の R-N（30 s 以内に両方で成立した対、30 s の採点）>= 0.10"},
+          {"id": "C.c3", "rule": "30 s 以内に両方で成立した対の数 >= 20"}
+        ],
+        "action": "滑りのデータ（落下・置き損ねの復帰デモを 30/20 本から 60/40 本、R にだけ。N には同じ配置の通常デモ）を束 4 の候補にする"
+      },
+      "stop_branch": {
+        "when": "C.c1〜c3 のどれかを満たさない（成立した対が 20 未満のときを含む）",
+        "action": "落下と置き損ねの改善は研究の道へ。束 4 の滑りの要因は扱わない"
+      },
+      "branching_rule": [
+        {"id": "C.b1", "when": "C が合格し、S の分岐でも開始状態が候補", "action": "開始状態を優先して束 4 に進め、滑りは研究の道へ回す（損失の大きさと H1 に直結するため）"},
+        {"id": "C.b2", "when": "fall_as_is と fall_with_hold の差が大きい", "action": "報告だけ。誘発の手順を変えた版は診断にだけ使い、テストでは使わない"}
+      ],
+      "size_rationale": "0.05 -> 0.20 は、成立した約 38〜50 件で検出力 0.65〜0.76（W\\plan_gated\\g1_gate_sizing.json。30 s の前提）。足切りの 20 対は、それ未満では R-N が 0.10 でも区別できないため。",
+      "time_change_rationale": "結果を見る前の決定（10/08。D-復帰はまだ回していない）。改訂 1 で主な採点を 60 s にしたが、改訂 2 で作者の決定（主な指標は 30 s の採点）により 30 s に戻した。0.20・0.10・20 対と検出力 0.65〜0.76 は 30 s の前提で出した値なので、30 s の採点で当てはめると根拠と条件が一致する。束 4 のテストも 30 s を主に採点するので、関門とテストの条件も一致する。60 s の採点は副次として並べ、判定に使わない",
+      "decided_before_results": ["gate_variant", "C.c1〜c3 の数値", "分母の定義（L 秒以内に成立した試行）", "30 s を主、60 s を副次、45 s は記述だけ"],
+      "decided_after_results": []
+    },
+
+    "K": {
+      "name": "回し直しのぶれ（物差し）",
+      "bundle": 0,
+      "runs": {"band": "K", "model": "R1v3", "config": "最終評価の A と同じ（naive 6 行、安全フィルタなし）。制限時間だけ 60 s（段階 3 は 30 s）。30 s の採点は段階 3 と同じ定義", "time_limit_s": 60, "gpu_driver": "610.88（新ドライバ。段階 3 は 560.94）", "repeat": 2, "trials": 99, "note":"2 回の回しの間に別の評価を挟まない。GPU 推論の揺らぎがあるので、同じ種でも成否は入れ替わる（それが測りたいもの）"},
+      "e7_extension": {"id": "K.e7", "ja": "E7 の回し直しのぶれ", "source": "D-E7 の E0_run1 と E0_run2（同じ 40 種）", "measure": ["all_three_true の食い違い率", "first_close_lift の差 d_E0", "2 本の対の相関 rho_hat（成功の二値の phi 係数）"]},
+      "primary_metric": "discordance_d（30 s の採点。d0_30。前例と同じ定義）",
+      "secondary_metric": "discordance_d（60 s の採点。d0_60）",
+      "continue": {
+        "all_of": [{"id": "K.c1", "rule": "99 試行が 2 回とも最後まで終わり、種・配置・色の対応が一致している"}],
+        "action": "d0 を測った値として全報告に載せる（回し直しのぶれ。小さな差の判断に使う）"
+      },
+      "stop_branch": {
+        "when": "K.c1 を満たさない（途中で止まった・対応が崩れた）",
+        "action": "その回の d0 は載せない。前例の範囲（0.19〜0.36）を『測れなかったので前例』として載せ、K をもう一度回すのは予備の帯 193300〜 で 1 回だけ"
+      },
+      "branching_rule": [
+        {"id": "K.b1", "when": "d0_30 <= 0.364 かつ d0_60 <= 0.364", "action": "前例の範囲内。そのまま載せる"},
+        {"id": "K.b2", "when": "d0_30 > 0.364 または d0_60 > 0.364（通りにくい側）", "action": "前例を超えるぶれ。全報告に警告として載せ、成功率の小さな差の主張は仕組みの指標（移動の比・最初に閉じた位置の差・継ぎ目の跳び）で述べる。関門 R・T・S・C の判定の数値は変えない"}
+      ],
+      "environment_note": "K は新ドライバ 610.88 で 60 s まで回し、30 s（主）と 60 s（副）で採点する。段階 4 の中の比較の物差しに使う。前例（30 s・旧ドライバ）とは同じ定義の d0_30 で比べ、ドライバの差は分けられないと書く",
+      "uses_downstream": ["層 (iii) の『分布として一致』の基準（docs/目標書_段階4.md 第 5 節。d0_30 を使う）", "E7 の試行数の計算（rho_hat）"],
+      "size_rationale": "前例 0.193（88 対）・0.364（22 対）、別モデルどうし 0.28（30 s・旧ドライバ）。99 試行では d0 の標準誤差が約 0.04（二項の近似）。1 回の値は約 10 ポイント動く。",
+      "decided_before_results": ["d0 の定義（30 s が主、60 s が副）", "K.b1・K.b2 の境界 0.364 と『どちらかが超えたら警告』", "K.c1"],
+      "decided_after_results": ["d0 の値（測定そのもの）"]
+    }
+  },
+
+  "transplant_arm": {
+    "id": "XPL",
+    "ja": "移植: E7 の 2 番目の始めの状態をそのまま再現する単発の試行（critique #1）",
+    "band": "D_transplant",
+    "states": {
+      "count": 20,
+      "source": "outputs/v2eval/V3S3/E7_R1v3 の run_0000〜run_0019（赤 20/20 で 2 番目の手順が始まった 20 本）。種は 190420 + i が run_{i:04d} に対応",
+      "joints": "runtime_NNNN.json の、2 番目の手順の始めの直後の最初の推論時の state（関節 7 + グリッパ）",
+      "cubes": "run_NNNN.npz の、同じ時刻の cube_pos・cube_quat（赤・緑・青の 3 個）",
+      "index_rule": "どの添字を 2 番目の始めとみなすかは、実装役が記録の形式から決めて回す前に掲示する（結果に依存しない）",
+      "g1_note": "初期状態の設定に記録した真値を使うが、場面のリセット（目標書の非目標『場面のリセットの実機化』）に当たる。実行時の判断には使わない。G1 は変えない"
+    },
+    "arms": [
+      {"id": "XPL_as",   "ja": "腕そのまま", "arm": "記録した関節", "cubes": "記録した 3 個の位置"},
+      {"id": "XPL_home", "ja": "腕だけ home へ", "arm": "学習の home の関節角 [0, -0.684, 0, -2.907, 0, 2.216, 0.785]", "cubes": "記録した 3 個の位置"},
+      {"id": "XPL_grid", "ja": "赤だけ格子へ", "arm": "記録した関節", "cubes": "赤を学習データの格子の上の最も近い空き位置へ移す。緑・青は記録のまま。空き位置の決め方は実装役が回す前に掲示"}
+    ],
+    "repeats": 2,
+    "trials": {"per_arm": 40, "total": 120, "compute": "60 s で約 1.6 プロセス時間（推測。critique #1 の 1.3 に自然の 60 s の倍率 1.215 を掛けた）", "time_limit_s": 60},
+    "target": "緑（2 番目の手順の色）。目標位置の入力は緑",
+    "primary_metric": "plus_y_shift",
+    "secondary_metrics": ["first_close_lift"],
+    "reproduces_rule": {"id": "XPL.rep", "rule": "XPL_as の plus_y_shift >= 0.40（E7 は 0.81、単発の待機位置始まりは 0.07 なので、その中間より上）"},
+    "pose_cause_rule": {"id": "XPL.pose", "rule": "XPL.rep を満たし、XPL_home の plus_y_shift が XPL_as より 0.25 以上低い。かつ 2 回の回しのそれぞれ（各 20 試行）でも 0.15 以上低い（再現の守り）"},
+    "prior_cause_rule": {"id": "XPL.prior", "rule": "XPL.rep を満たし、XPL_grid の plus_y_shift が XPL_as より 0.25 以上低い。かつ 2 回の回しのそれぞれ（各 20 試行）でも 0.15 以上低い"},
+    "analysis_unit_note": "同じ状態の 2 回は独立ではないので p 値は出さない。点推定と 2 回それぞれの向きの一致だけで機械的に当てはめる（ふるいの扱い）",
+    "size_rationale": "40 試行/腕。0.50 対 0.20 の検出力 0.84、0.65 対 0.25 は 0.97（規則役の簡易計算、独立と仮定した上限）。状態が同じ 2 回なので実際は下がる。だから p 値でなく点推定と再現の守りで当てはめる。"
+  },
+
+  "candidate_selection": {
+    "_note": "束 4 の候補の選び方。上から順に当てはめ、最初に当たった行で止まる。T の結果を使うのは行 3 だけ（critique #1）。結果を見て順序や数値を変えない。",
+    "rows": [
+      {"order": 1, "when": "XPL.rep を満たさない（移植しても +y のずれが再現しない）", "verdict": "internal_state", "action": "原因は実行系の内部状態（途中での手順の切り替えなど）と見る。開始状態のデータは作らない。手順の切り替えで実行系を作り直す E7 の腕 EX を D-E7 の 40 種（190300〜190339）に足して回す（1 手順 30 s で +約 3.6 プロセス時間）。束 4 の開始状態の要因は扱わない"},
+      {"order": 2, "when": "S.prior と XPL.prior の両方を満たす（先客で再現）", "verdict": "prior_cube", "action": "先客のデータ（格子の外・壁際の先客を置いた開始）を束 4 の候補にする。T の結果は問わない"},
+      {"order": 3, "when": "S.pose と XPL.pose の両方を満たす（姿勢で再現）。行 2 は満たさない", "verdict": "pose", "action": "T が合格（EH か ES が T.c1〜c3 を満たす）なら『実行器で足りる』。戻し先は束 2 の v3 (a) へ。データにするのは研究の道。T が不合格なら、姿勢では説明がつかない矛盾として束 4 に進まず、EX を足す（規則役の補い。needs_decision 参照）"},
+      {"order": 4, "when": "上のどれにも当たらない（どちらも再現しない）", "verdict": "none", "action": "束 4 の開始状態の要因はやらない。開始状態のデータは研究の道へ"}
+    ],
+    "slip_rule": [
+      {"when": "関門 C が合格", "action": "滑りのデータを束 4 の候補にする"},
+      {"when": "開始状態の候補（prior_cube）と滑りの候補が両方残る", "action": "開始状態を優先。滑りは研究の道へ"},
+      {"when": "開始状態の候補がなく、滑りだけ残る", "action": "滑りを束 4 の 1 要因にする"}
+    ],
+    "never": ["弱い層のデータ単独は学習の理由にしない（+2〜5 ポイントは測れない）", "構造・学習手法の変更は提出物の道で行わない"],
+    "if_no_candidate": "束 4 は研究の道へ。テスト 1 は H2（種の複製）と、関門 R・T で通ったものだけ"
+  },
+
+  "bundle4_gates": {
+    "_note": "束 4（条件つき）の関門 D・2・3。参考として同じ形で固定しておく。細かい帯の割り当てと事前登録 v2 は D3 で諮る。どれも、落ちたら研究の道へ回す『やめる枝』を持つ。",
+    "D": {
+      "name": "学習の前の検査",
+      "all_of": [
+        "E7 の 2 番目の始めの状態ベクトルの 80% 以上が、新しいデータの中で最近傍距離 0.28〜0.33 以内",
+        "落下の直後の状態の 50% 以上が 3 cm 以内（今は 38 中 36 が 3 cm 超）。滑りの要因を扱うときだけ",
+        "格子の外の先客を描いた画像 10 枚を目で確かめる",
+        "層 (i)（方策を通さない部分）の回し直し 5 本がビット一致",
+        "R と N で通常デモの集合が同じ"
+      ],
+      "stop_branch": "1 つでも満たさなければ学習に進まず、研究の道へ"
+    },
+    "G2": {
+      "name": "関門 2（検証、192100〜）",
+      "guards_all_of": ["R4 の自然の成功 >= R1v3 - 5 ポイント（198 対、30 s の採点）", "R4 の把持失敗からの復帰 >= R1v3 - 10 ポイント（30 s の採点）", "R4-N4 の把持失敗からの復帰 >= +20 ポイント（30 s の採点）"],
+      "aim_one_per_factor": {"start_state": "2 番目の 1 回目の持ち上げ +0.25（E7 40 本、v3 の実行器で。1 手順 30 s）", "slip": "落下の 30 s の復帰 +0.15（100 試行。成立 約 76 件で検出力 0.91。30 s の前提の値）"},
+      "time_note": "改訂 2（10/08、作者の決定）で主な採点を 30 s に戻した（改訂 1 では 60 s）。数値は変えない。60 s の採点は副次として並べる。誘発の分母は L 秒以内に成立した試行",
+      "stop_branch": "守りを割ったら研究の道で原因を調べる。狙いに届かなければテスト 2 へ進まない"
+    },
+    "G3": {
+      "name": "関門 3",
+      "rule": "種 1001 の R4・N4 でも、狙いの向きが正で、R4-N4 が +20 ポイント以上",
+      "note": "この結果は書き方だけを決める",
+      "stop_branch": "満たさなければ『種 1 つの結果』と明記し、提出物ではなく診断として載せる"
+    },
+    "deadlines": {"last_training_start": "2026-10-15 24:00", "test2_end": "2026-10-19 24:00", "on_miss": "研究の道へ（関門は同じものを使う）", "note": "critique #2 は締めを 10/25 にし、既定で研究の道へ回す案を出したが、採用済みの項目（#1・#4・#6・D-復帰の計算）に含まれない。final.md のとおり 10/19 を置く。作者の判断点"}
+  },
+
+  "budget_notes": {
+    "_note": "単発の試行は 60 s、E7 は 1 手順 30 s（改訂 2）で計算し直した。方法は critique #2 の c2_wall_vs_sim.py と同じで、単発は 30 s で打ち切られた試行がすべて 60 s まで回ると置く（上限側）。E7 は段階 3 と同じ持ち時間なので、段階 3 の実測の速さ（1 本 262 s、3 本並行で 1.25 倍）をそのまま使う（改訂 1 の倍率 1.60 は外した）。出どころ: R\\outputs\\s4\\rules\\budget60_calc.py・budget60.json（改訂 1）と、同じ計算で E7 の倍率を 1.0 に置いたもの（改訂 2、規則の直し役。R\\outputs\\s4\\rules\\budget60_e7_30_calc.py・budget60_e7_30.json）。速さは旧ドライバの記録からの推測なので、束 0 の K と E7 の速さの実測で確かめ、15% を超えてずれたら計算し直して掲示する（関門の数値は変えない）",
+    "factor_60_over_30": {"A_nat": 1.215, "A_P1": 1.432, "B_P1": 1.795, "A_P2": 1.803, "A_P3": 1.954, "E7_R1v3_r1_withdrawn": 1.601},
+    "e7_factor_r2": {"value": 1.0, "note": "E7 は段階 3 と同じ 1 手順 30 s・全体 200 s なので倍率は掛けない"},
+    "factor_55_over_30_critique": {"A_nat": 1.18, "A_P1": 1.36, "B_P1": 1.66, "A_P2": 1.67, "A_P3": 1.79},
+    "d_recovery_process_hours": {"final_md": 7.3, "critique_55s": 10.0, "s4_60s": 10.8, "alt_60s_N_proportional": 11.0, "basis": "落下・置き損ねは 60 s で約 1.80〜1.95 倍（critique の 55 s では約 1.7 倍）。把持失敗は R 1.43・N 1.80"},
+    "d_e7_process_hours": {"arms_5_x_40_at_30s": 18.2, "extra_E0_at_30s": 3.6, "EX_at_30s": 3.6, "r1_withdrawn_60s": {"arms_5_x_40": 29.1, "EX": 5.8}},
+    "transplant_process_hours": {"critique": 1.3, "s4_60s": 1.6},
+    "bundle0_process_hours": {"final_md": 2.66, "r1": 3.4, "s4_r2": 3.1},
+    "bundle1_total_process_hours": {"final_md": 26.9, "r0_rule_role_sum": 34.5, "r1": 47.7, "s4_r2": 36.8, "calc": "RTC 3.6 + D-E7 18.2 + 単発の開始 2.6 + D-復帰 10.8 + 移植 1.6（EX が要るときは +3.6）", "parallel_3_hours": 12.9},
+    "test1_process_hours": {"final_md": 61.2, "critique_55s_p1_only": 65.2, "r1": 93.5, "s4_r2": 68.9, "breakdown_r2": {"e7_150x3": 40.9, "p1_600": 12.6, "natural": 10.3, "rtc": 5.0}, "parallel_3_hours": 24.2, "end_assumption": "10/12 の午前に始めて 10/13 の午前〜昼（推測）。再起動で止まれば、サインインまでの時間だけ延びる"}
+  },
+
+  "e7_sample_size_rule": {
+    "_note": "結果を見た後に決める項目。計算の式だけ今固定する。決めるのは D2（作者）。",
+    "inputs": ["D-E7 の E0 2 回から rho_hat", "基準の割合 p0 = D-E7 の E0 の 2 回（1 手順 30 s。段階 3 と同じ）の 3 個とも（真値）の平均。仮定の効果は p0 -> p0 + 0.15（段階 3 の 30% -> 45% は同じ持ち時間だが旧ドライバの値なので参考に並べるだけ）","McNemar の正確検定、両側、alpha=0.05（Holm では H2 が先に通るので H1 は実質 alpha=0.05。critique #6）"],
+    "proposal": "検出力 >= 0.79 になる最小の本数を {100, 150, 200} から機械的に提案する。上限 200",
+    "decision": "D2 で作者が承認する"
+  },
+
+  "fields_decided_after_results": [
+    {"item": "関門 R で上位 2 設定として残る設定", "how": "R.continue.ranking で機械的に決まる"},
+    {"item": "関門 T で束 2 に送る戻し先（EH か ES）", "how": "T.continue.action で機械的に決まる"},
+    {"item": "束 4 の候補（開始状態／滑り／なし）", "how": "candidate_selection で機械的に決まる"},
+    {"item": "EX の腕を足すか", "how": "candidate_selection の行 1 と行 3 の矛盾の枝で機械的に決まる"},
+    {"item": "E7 の試行数（テスト 1）", "how": "e7_sample_size_rule の提案を D2 で承認"},
+    {"item": "束 2 B2 に採る RTC の設定（躍度が最小）", "how": "束 2 の確認の規則（final.md）で機械的に決まる"}
+  ],
+  "authority": "作者は拒否権だけを持つ（関門 1 の 1 枚が届いてから 13:00 まで）。規則どおりの当てはめを、数値を変えて行うことはしない。"
+}

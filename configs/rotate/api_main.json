@@ -1,0 +1,82 @@
+{
+ "name": "api_main",
+ "experiment": "APIL",
+ "lanes": 4,
+ "block": 10,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "U0": {
+   "n": 200,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--arm",
+    "U0",
+    "--experiment",
+    "APIL",
+    "--condition",
+    "U0",
+    "--model",
+    "Rreal",
+    "--trials",
+    "170000:200",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--min-free-gb",
+    "8"
+   ]
+  },
+  "L2v2": {
+   "n": 200,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--arm",
+    "L2v2",
+    "--experiment",
+    "APIL",
+    "--condition",
+    "L2v2",
+    "--model",
+    "Rreal",
+    "--trials",
+    "170000:200",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--min-free-gb",
+    "8",
+    "--finder",
+    "estimated"
+   ]
+  },
+  "CL": {
+   "n": 200,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--arm",
+    "CL",
+    "--experiment",
+    "APIL",
+    "--condition",
+    "CL",
+    "--model",
+    "Rreal",
+    "--trials",
+    "170000:200",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--min-free-gb",
+    "8",
+    "--finder",
+    "estimated"
+   ]
+  }
+ }
+}

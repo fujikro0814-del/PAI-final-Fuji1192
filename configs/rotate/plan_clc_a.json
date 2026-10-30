@@ -1,0 +1,103 @@
+{
+ "name": "clc_a",
+ "experiment": "CLC",
+ "lanes": 4,
+ "block": 10,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "N0": {
+   "n": 100,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "CLC",
+    "--arm",
+    "U0",
+    "--condition",
+    "N0",
+    "--model",
+    "Nreal",
+    "--model-ckpt",
+    "Nreal=outputs/real/regen/train/train_Nreals1000_20261014-104429_20261014-104429/checkpoints/020000/pretrained_model",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "171200:100",
+    "--min-free-gb",
+    "8"
+   ]
+  },
+  "U0": {
+   "n": 100,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "CLC",
+    "--arm",
+    "U0",
+    "--condition",
+    "U0",
+    "--model",
+    "Rreal",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "171200:100",
+    "--min-free-gb",
+    "8"
+   ]
+  },
+  "L2v2": {
+   "n": 100,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "CLC",
+    "--arm",
+    "L2v2",
+    "--condition",
+    "L2v2",
+    "--model",
+    "Rreal",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "171200:100",
+    "--min-free-gb",
+    "8",
+    "--finder",
+    "estimated"
+   ]
+  },
+  "CL2": {
+   "n": 100,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "CLC",
+    "--arm",
+    "CL2",
+    "--condition",
+    "CL2",
+    "--model",
+    "Rreal",
+    "--trials",
+    "171200:100",
+    "--min-free-gb",
+    "8",
+    "--finder",
+    "estimated"
+   ]
+  }
+ }
+}

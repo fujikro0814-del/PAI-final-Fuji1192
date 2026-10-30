@@ -1,0 +1,91 @@
+<mujoco model="panda_scene_3cube">
+  <!-- 3 色の場面（Step D）。scene_g0.xml（以前に自作した遠隔操作と記録の道具 teleop_scene.xml）から作った。
+       変えたのは次の 5 点だけで、机・記録用カメラ・背景・腕は scene_g0.xml と同じ:
+         1. 立方体を 3 個（赤・緑・青）にし、体と形状に名前を付けた（cube_<色>、cube_<色>_geom）
+         2. 発表用カメラ presentation を足した（記録用カメラの描画は変わらないことを tests/test_d_scene.py で確かめる）
+         3. 発表用の 1280x720 を描けるように、画面外の描画領域を広げた（visual/global）
+         4. keyframe の qpos を立方体 3 個の並びにした
+         5. 箱の内寸を 0.12 から 0.16 に広げた（。壁の厚さ・高さ・中心は同じ）
+       立方体の位置はここでは仮の値で、試行ごとに recovla.sim.scene.apply_layout が置き直す。
+       色は configs/default.yaml の scene.colors と同じ値（tests で照合する）。 -->
+  <option timestep="0.002" gravity="0 0 -9.81"/>
+
+  <include file="panda/panda.xml"/>
+  <compiler meshdir="panda/assets"/>
+
+  <visual>
+    <global offwidth="1280" offheight="720"/>
+  </visual>
+
+  <asset>
+    <texture name="bg_sky" type="skybox" builtin="flat" rgb1="0.5 0.5 0.5" rgb2="0.5 0.5 0.5"
+             width="32" height="32"/>
+  </asset>
+
+  <worldbody>
+    <geom name="floor_visual" type="plane" size="3 3 0.1" pos="0 0 -0.1"
+          rgba="0.45 0.45 0.45 1" contype="0" conaffinity="0"/>
+
+    <!-- 記録用の俯瞰カメラ（scene_g0.xml と同じ。動かさない） -->
+    <camera name="overhead" pos="1.407555 0.05 0.853485"
+            xyaxes="0 1 0 -0.642788 0 0.766044" fovy="45"/>
+
+    <!-- 発表用カメラ（記録しない）。右前方の斜め上から (0.42, 0.06, 0.06) を見る。
+         pos・xyaxes は configs/default.yaml の scene.presentation_camera と同じ値（tests で照合する） -->
+    <camera name="presentation" pos="1.2 -0.75 0.75"
+            xyaxes="0.72032 0.693642 0 -0.362773 0.376726 0.852334" fovy="40"/>
+
+    <body name="table" pos="0 0 -0.05">
+      <geom name="table_geom" type="box" size="0.8 0.6 0.05"
+            rgba="0.7 0.7 0.7 1" condim="4" friction="1 0.005 0.0001"/>
+    </body>
+
+    <body name="cube_red" pos="0.40 -0.10 0.02">
+      <freejoint name="cube_red_joint"/>
+      <geom name="cube_red_geom" type="box" size="0.02 0.02 0.02"
+            rgba="1 0 0 1" mass="0.05" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="cube_green" pos="0.40 0.00 0.02">
+      <freejoint name="cube_green_joint"/>
+      <geom name="cube_green_geom" type="box" size="0.02 0.02 0.02"
+            rgba="0 1 0 1" mass="0.05" friction="1 0.005 0.0001"/>
+    </body>
+    <body name="cube_blue" pos="0.50 -0.05 0.02">
+      <freejoint name="cube_blue_joint"/>
+      <geom name="cube_blue_geom" type="box" size="0.02 0.02 0.02"
+            rgba="0 0 1 1" mass="0.05" friction="1 0.005 0.0001"/>
+    </body>
+
+    <!-- 箱。内寸 0.16 x 0.16（ で scene_g0.xml の 0.12 から広げた。中心・壁の厚さ 5 mm・壁の上端 z=0.06・
+         底の上面 z=0.01・色は scene_g0.xml と同じ）。寸法は configs/default.yaml の scene.box と同じ（tests で照合する） -->
+    <body name="goal_box" pos="0.45 0.25 0">
+      <geom name="box_bottom" type="box" size="0.09 0.09 0.005"
+            pos="0 0 0.005" rgba="0.9 0.75 0.2 1"
+            friction="1 0.005 0.0001"/>
+      <geom name="box_wall_xp" type="box" size="0.005 0.09 0.025"
+            pos="0.085 0 0.035" rgba="0.9 0.75 0.2 1"/>
+      <geom name="box_wall_xn" type="box" size="0.005 0.09 0.025"
+            pos="-0.085 0 0.035" rgba="0.9 0.75 0.2 1"/>
+      <geom name="box_wall_yp" type="box" size="0.09 0.005 0.025"
+            pos="0 0.085 0.035" rgba="0.9 0.75 0.2 1"/>
+      <geom name="box_wall_yn" type="box" size="0.09 0.005 0.025"
+            pos="0 -0.085 0.035" rgba="0.9 0.75 0.2 1"/>
+    </body>
+
+    <!-- 制御器の目標（描画されない group 5、衝突なし。scene_g0.xml と同じ） -->
+    <body name="target" mocap="true" pos="0.4 0 0.3">
+      <geom type="sphere" size="0.02" rgba="1 0 0 0.3" group="5"
+            contype="0" conaffinity="0"/>
+    </body>
+  </worldbody>
+
+  <!-- qpos (nq=30): joint1..7, finger_joint1..2, then cube_red, cube_green, cube_blue (pos3 + quat4 each) -->
+  <keyframe>
+    <key name="home"
+         qpos="0 -0.785 0 -2.356 0 1.571 0.785 0.04 0.04
+               0.40 -0.10 0.02 1 0 0 0
+               0.40 0.00 0.02 1 0 0 0
+               0.50 -0.05 0.02 1 0 0 0"/>
+  </keyframe>
+
+</mujoco>

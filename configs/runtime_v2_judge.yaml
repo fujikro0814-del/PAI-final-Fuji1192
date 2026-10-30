@@ -1,0 +1,14 @@
+# 自動で書いた値（scripts/85_v2_judge.py fit）。学習用のシードの例だけで決めた完了判定の画素の閾値。手で直さない
+runtime_v2:
+  judge:
+    box_min_pixels: 69
+    wrist_min_pixels: 52
+    wrist_min_fraction: 0.8
+fit:
+  tag: fit2
+  seeds: '59600:40'
+  n: 240
+  box_correct: 226
+  wrist_fraction_correct: 228
+  wrist_pixels_correct: 123
+  written: '2026-09-29 16:16:07'

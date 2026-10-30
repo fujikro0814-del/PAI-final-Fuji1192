@@ -1,0 +1,12 @@
+{
+ "name": "v3u4_sr_compose",
+ "experiment": "V3U4PILOT",
+ "lanes": 3,
+ "block": 5,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "SRH_L1": {"n": 5, "argv": ["scripts/real/u4_ladder.py", "run", "--arm", "L1", "--step-reset", "home", "--experiment", "V3U4PILOT", "--condition", "SRH_L1", "--model", "Rreal", "--trials", "44770:5", "--grip-debounce", "5", "--allow-smoke", "--min-free-gb", "8"]},
+  "SRH_L2": {"n": 5, "argv": ["scripts/real/u4_ladder.py", "run", "--arm", "L2", "--step-reset", "home", "--experiment", "V3U4PILOT", "--condition", "SRH_L2", "--model", "Rreal", "--trials", "44770:5", "--grip-debounce", "5", "--allow-smoke", "--min-free-gb", "8"]},
+  "SRH_OR": {"n": 5, "argv": ["scripts/real/u4_ladder.py", "run", "--arm", "OR", "--step-reset", "home", "--experiment", "V3U4PILOT", "--condition", "SRH_OR", "--model", "Rreal", "--trials", "44770:5", "--grip-debounce", "5", "--allow-smoke", "--min-free-gb", "8"]}
+ }
+}

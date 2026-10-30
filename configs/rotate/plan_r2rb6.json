@@ -1,0 +1,44 @@
+{
+ "name": "r2rb6",
+ "experiment": "R2RB6",
+ "lanes": 4,
+ "block": 10,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "LrL10": {
+   "n": 33,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "R2RB6",
+    "--arm",
+    "Lf",
+    "--condition",
+    "LrL10",
+    "--model",
+    "Rplace",
+    "--model-ckpt",
+    "Rplace=outputs/r2c/train_place/train_Rplaces1000_20261028-070452_20261028-070452/checkpoints/040000/pretrained_model",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "171567:33",
+    "--min-free-gb",
+    "8",
+    "--finder",
+    "estimated",
+    "--runtime-mode",
+    "rtc",
+    "--rtc-horizon",
+    "10",
+    "--rtc-schedule",
+    "LINEAR",
+    "--rtc-max-guidance",
+    "10"
+   ]
+  }
+ }
+}

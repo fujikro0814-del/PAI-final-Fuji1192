@@ -1,0 +1,933 @@
+{
+ "CL|real|color": {
+  "plan": {
+   "arm": "CL",
+   "arm_ja": "古典の台本（立て直しなし）",
+   "executor": "runtime/executor.TaskRuntime",
+   "finder": "color",
+   "monitors": null,
+   "planner": "planner/decompose_haiku（claude-haiku-5-5）",
+   "replan": null,
+   "runnable": false,
+   "senses": [
+    {
+     "latency_s": 0.0,
+     "name": "joints",
+     "note": "関節の角度・速度・最後の指令 q_d（libfranka の RobotState）",
+     "rate_hz": 1000.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.0,
+     "name": "gripper",
+     "note": "開き幅（2 本の和）と is_grasped。v3_real は 6.5 Hz・遅れ 0.08 s",
+     "rate_hz": 10.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/overhead",
+     "note": "俯瞰の RGB-D（遅れは 33〜100 ms の一様）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": false
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/wrist",
+     "note": "手首の RGB-D（同上）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": false
+    }
+   ],
+   "skill": {
+    "missing": [
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "name": "script",
+    "needs": [
+     "joints",
+     "gripper",
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "note": "古典の台本（知覚の推定・順運動学・幅だけ）。段階の決まりは api/skills_script"
+   },
+   "target": "real",
+   "task": "tidy3_cubes"
+  },
+  "text": "[api] 腕 CL（古典の台本（立て直しなし））、タスク tidy3_cubes、real の感覚で 足りない感覚がある\n  実行器: runtime/executor.TaskRuntime\n  計画役: planner/decompose_haiku（claude-haiku-5-5）\n  立て直し: なし\n  知覚の口: color\n  技能: script  needs joints, gripper, camera/overhead, camera/wrist  足りない ['camera/overhead', 'camera/wrist']\n  見張り役: なし\n  感覚:\n    joints           実機 有  模型 有  1000.0 Hz  遅れ 0.000 s  ○\n    gripper          実機 有  模型 有  10.0 Hz  遅れ 0.000 s  ○\n    camera/overhead  実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ×\n    camera/wrist     実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ×"
+ },
+ "CL|real|estimated": {
+  "plan": {
+   "arm": "CL",
+   "arm_ja": "古典の台本（立て直しなし）",
+   "executor": "runtime/executor.TaskRuntime",
+   "finder": "estimated",
+   "monitors": null,
+   "planner": "planner/decompose_haiku（claude-haiku-5-5）",
+   "replan": null,
+   "runnable": false,
+   "senses": [
+    {
+     "latency_s": 0.0,
+     "name": "joints",
+     "note": "関節の角度・速度・最後の指令 q_d（libfranka の RobotState）",
+     "rate_hz": 1000.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.0,
+     "name": "gripper",
+     "note": "開き幅（2 本の和）と is_grasped。v3_real は 6.5 Hz・遅れ 0.08 s",
+     "rate_hz": 10.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/overhead",
+     "note": "俯瞰の RGB-D（遅れは 33〜100 ms の一様）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": false
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/wrist",
+     "note": "手首の RGB-D（同上）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": false
+    }
+   ],
+   "skill": {
+    "missing": [
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "name": "script",
+    "needs": [
+     "joints",
+     "gripper",
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "note": "古典の台本（知覚の推定・順運動学・幅だけ）。段階の決まりは api/skills_script"
+   },
+   "target": "real",
+   "task": "tidy3_cubes"
+  },
+  "text": "[api] 腕 CL（古典の台本（立て直しなし））、タスク tidy3_cubes、real の感覚で 足りない感覚がある\n  実行器: runtime/executor.TaskRuntime\n  計画役: planner/decompose_haiku（claude-haiku-5-5）\n  立て直し: なし\n  知覚の口: estimated\n  技能: script  needs joints, gripper, camera/overhead, camera/wrist  足りない ['camera/overhead', 'camera/wrist']\n  見張り役: なし\n  感覚:\n    joints           実機 有  模型 有  1000.0 Hz  遅れ 0.000 s  ○\n    gripper          実機 有  模型 有  10.0 Hz  遅れ 0.000 s  ○\n    camera/overhead  実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ×\n    camera/wrist     実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ×"
+ },
+ "CL|sim|color": {
+  "plan": {
+   "arm": "CL",
+   "arm_ja": "古典の台本（立て直しなし）",
+   "executor": "runtime/executor.TaskRuntime",
+   "finder": "color",
+   "monitors": null,
+   "planner": "planner/decompose_haiku（claude-haiku-5-5）",
+   "replan": null,
+   "runnable": true,
+   "senses": [
+    {
+     "latency_s": 0.0,
+     "name": "joints",
+     "note": "関節の角度・速度・最後の指令 q_d（libfranka の RobotState）",
+     "rate_hz": 1000.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.0,
+     "name": "gripper",
+     "note": "開き幅（2 本の和）と is_grasped。v3_real は 6.5 Hz・遅れ 0.08 s",
+     "rate_hz": 10.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/overhead",
+     "note": "俯瞰の RGB-D（遅れは 33〜100 ms の一様）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/wrist",
+     "note": "手首の RGB-D（同上）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": true
+    }
+   ],
+   "skill": {
+    "missing": [],
+    "name": "script",
+    "needs": [
+     "joints",
+     "gripper",
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "note": "古典の台本（知覚の推定・順運動学・幅だけ）。段階の決まりは api/skills_script"
+   },
+   "target": "sim",
+   "task": "tidy3_cubes"
+  },
+  "text": "[api] 腕 CL（古典の台本（立て直しなし））、タスク tidy3_cubes、sim の感覚で 動ける\n  実行器: runtime/executor.TaskRuntime\n  計画役: planner/decompose_haiku（claude-haiku-5-5）\n  立て直し: なし\n  知覚の口: color\n  技能: script  needs joints, gripper, camera/overhead, camera/wrist\n  見張り役: なし\n  感覚:\n    joints           実機 有  模型 有  1000.0 Hz  遅れ 0.000 s  ○\n    gripper          実機 有  模型 有  10.0 Hz  遅れ 0.000 s  ○\n    camera/overhead  実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ○\n    camera/wrist     実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ○"
+ },
+ "CL|sim|estimated": {
+  "plan": {
+   "arm": "CL",
+   "arm_ja": "古典の台本（立て直しなし）",
+   "executor": "runtime/executor.TaskRuntime",
+   "finder": "estimated",
+   "monitors": null,
+   "planner": "planner/decompose_haiku（claude-haiku-5-5）",
+   "replan": null,
+   "runnable": true,
+   "senses": [
+    {
+     "latency_s": 0.0,
+     "name": "joints",
+     "note": "関節の角度・速度・最後の指令 q_d（libfranka の RobotState）",
+     "rate_hz": 1000.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.0,
+     "name": "gripper",
+     "note": "開き幅（2 本の和）と is_grasped。v3_real は 6.5 Hz・遅れ 0.08 s",
+     "rate_hz": 10.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/overhead",
+     "note": "俯瞰の RGB-D（遅れは 33〜100 ms の一様）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/wrist",
+     "note": "手首の RGB-D（同上）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": true
+    }
+   ],
+   "skill": {
+    "missing": [],
+    "name": "script",
+    "needs": [
+     "joints",
+     "gripper",
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "note": "古典の台本（知覚の推定・順運動学・幅だけ）。段階の決まりは api/skills_script"
+   },
+   "target": "sim",
+   "task": "tidy3_cubes"
+  },
+  "text": "[api] 腕 CL（古典の台本（立て直しなし））、タスク tidy3_cubes、sim の感覚で 動ける\n  実行器: runtime/executor.TaskRuntime\n  計画役: planner/decompose_haiku（claude-haiku-5-5）\n  立て直し: なし\n  知覚の口: estimated\n  技能: script  needs joints, gripper, camera/overhead, camera/wrist\n  見張り役: なし\n  感覚:\n    joints           実機 有  模型 有  1000.0 Hz  遅れ 0.000 s  ○\n    gripper          実機 有  模型 有  10.0 Hz  遅れ 0.000 s  ○\n    camera/overhead  実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ○\n    camera/wrist     実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ○"
+ },
+ "L2v2|real|color": {
+  "plan": {
+   "arm": "L2v2",
+   "arm_ja": "見張り役の出来事で立て直し（VLA、Sonnet 5.5）",
+   "executor": "api/executor_monitored.MonitoredReplanTaskRuntime（L2 の包み）",
+   "finder": "color",
+   "monitors": {
+    "active": [],
+    "params": {
+     "grasp_drop": {
+      "camera_confirm": true,
+      "confirm_s": 1.0
+     },
+     "held_estimate_drop": {
+      "on_table_s": 0.5
+     }
+    },
+    "skipped": [
+     {
+      "missing": [
+       "camera/overhead"
+      ],
+      "name": "grasp_drop"
+     },
+     {
+      "missing": [
+       "camera/overhead"
+      ],
+      "name": "held_estimate_drop"
+     }
+    ]
+   },
+   "planner": "planner/decompose_haiku（claude-haiku-5-5）",
+   "replan": "planner/replan_event（claude-sonnet-5-5）、event dropped・timeout",
+   "runnable": false,
+   "senses": [
+    {
+     "latency_s": 0.0,
+     "name": "joints",
+     "note": "関節の角度・速度・最後の指令 q_d（libfranka の RobotState）",
+     "rate_hz": 1000.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.0,
+     "name": "gripper",
+     "note": "開き幅（2 本の和）と is_grasped。v3_real は 6.5 Hz・遅れ 0.08 s",
+     "rate_hz": 10.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/overhead",
+     "note": "俯瞰の RGB-D（遅れは 33〜100 ms の一様）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": false
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/wrist",
+     "note": "手首の RGB-D（同上）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": false
+    }
+   ],
+   "skill": {
+    "missing": [
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "name": "vla",
+    "needs": [
+     "joints",
+     "gripper",
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "note": "今の PolicyRuntime（方策の推論は io.compute、知覚・安全フィルタ・反射は 96 の make のまま）"
+   },
+   "target": "real",
+   "task": "tidy3_cubes"
+  },
+  "text": "[api] 腕 L2v2（見張り役の出来事で立て直し（VLA、Sonnet 5.5））、タスク tidy3_cubes、real の感覚で 足りない感覚がある\n  実行器: api/executor_monitored.MonitoredReplanTaskRuntime（L2 の包み）\n  計画役: planner/decompose_haiku（claude-haiku-5-5）\n  立て直し: planner/replan_event（claude-sonnet-5-5）、event dropped・timeout\n  知覚の口: color\n  技能: vla  needs joints, gripper, camera/overhead, camera/wrist  足りない ['camera/overhead', 'camera/wrist']\n  見張り役（止めた）: grasp_drop  足りない ['camera/overhead']\n  見張り役（止めた）: held_estimate_drop  足りない ['camera/overhead']\n  感覚:\n    joints           実機 有  模型 有  1000.0 Hz  遅れ 0.000 s  ○\n    gripper          実機 有  模型 有  10.0 Hz  遅れ 0.000 s  ○\n    camera/overhead  実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ×\n    camera/wrist     実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ×"
+ },
+ "L2v2|real|estimated": {
+  "plan": {
+   "arm": "L2v2",
+   "arm_ja": "見張り役の出来事で立て直し（VLA、Sonnet 5.5）",
+   "executor": "api/executor_monitored.MonitoredReplanTaskRuntime（L2 の包み）",
+   "finder": "estimated",
+   "monitors": {
+    "active": [],
+    "params": {
+     "grasp_drop": {
+      "camera_confirm": true,
+      "confirm_s": 1.0
+     },
+     "held_estimate_drop": {
+      "on_table_s": 0.5
+     }
+    },
+    "skipped": [
+     {
+      "missing": [
+       "camera/overhead"
+      ],
+      "name": "grasp_drop"
+     },
+     {
+      "missing": [
+       "camera/overhead"
+      ],
+      "name": "held_estimate_drop"
+     }
+    ]
+   },
+   "planner": "planner/decompose_haiku（claude-haiku-5-5）",
+   "replan": "planner/replan_event（claude-sonnet-5-5）、event dropped・timeout",
+   "runnable": false,
+   "senses": [
+    {
+     "latency_s": 0.0,
+     "name": "joints",
+     "note": "関節の角度・速度・最後の指令 q_d（libfranka の RobotState）",
+     "rate_hz": 1000.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.0,
+     "name": "gripper",
+     "note": "開き幅（2 本の和）と is_grasped。v3_real は 6.5 Hz・遅れ 0.08 s",
+     "rate_hz": 10.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/overhead",
+     "note": "俯瞰の RGB-D（遅れは 33〜100 ms の一様）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": false
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/wrist",
+     "note": "手首の RGB-D（同上）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": false
+    }
+   ],
+   "skill": {
+    "missing": [
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "name": "vla",
+    "needs": [
+     "joints",
+     "gripper",
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "note": "今の PolicyRuntime（方策の推論は io.compute、知覚・安全フィルタ・反射は 96 の make のまま）"
+   },
+   "target": "real",
+   "task": "tidy3_cubes"
+  },
+  "text": "[api] 腕 L2v2（見張り役の出来事で立て直し（VLA、Sonnet 5.5））、タスク tidy3_cubes、real の感覚で 足りない感覚がある\n  実行器: api/executor_monitored.MonitoredReplanTaskRuntime（L2 の包み）\n  計画役: planner/decompose_haiku（claude-haiku-5-5）\n  立て直し: planner/replan_event（claude-sonnet-5-5）、event dropped・timeout\n  知覚の口: estimated\n  技能: vla  needs joints, gripper, camera/overhead, camera/wrist  足りない ['camera/overhead', 'camera/wrist']\n  見張り役（止めた）: grasp_drop  足りない ['camera/overhead']\n  見張り役（止めた）: held_estimate_drop  足りない ['camera/overhead']\n  感覚:\n    joints           実機 有  模型 有  1000.0 Hz  遅れ 0.000 s  ○\n    gripper          実機 有  模型 有  10.0 Hz  遅れ 0.000 s  ○\n    camera/overhead  実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ×\n    camera/wrist     実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ×"
+ },
+ "L2v2|sim|color": {
+  "plan": {
+   "arm": "L2v2",
+   "arm_ja": "見張り役の出来事で立て直し（VLA、Sonnet 5.5）",
+   "executor": "api/executor_monitored.MonitoredReplanTaskRuntime（L2 の包み）",
+   "finder": "color",
+   "monitors": {
+    "active": [
+     {
+      "name": "grasp_drop",
+      "needs": [
+       "gripper",
+       "joints",
+       "camera/overhead"
+      ]
+     },
+     {
+      "name": "held_estimate_drop",
+      "needs": [
+       "gripper",
+       "joints",
+       "camera/overhead"
+      ]
+     }
+    ],
+    "params": {
+     "grasp_drop": {
+      "camera_confirm": true,
+      "confirm_s": 1.0
+     },
+     "held_estimate_drop": {
+      "on_table_s": 0.5
+     }
+    },
+    "skipped": []
+   },
+   "planner": "planner/decompose_haiku（claude-haiku-5-5）",
+   "replan": "planner/replan_event（claude-sonnet-5-5）、event dropped・timeout",
+   "runnable": true,
+   "senses": [
+    {
+     "latency_s": 0.0,
+     "name": "joints",
+     "note": "関節の角度・速度・最後の指令 q_d（libfranka の RobotState）",
+     "rate_hz": 1000.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.0,
+     "name": "gripper",
+     "note": "開き幅（2 本の和）と is_grasped。v3_real は 6.5 Hz・遅れ 0.08 s",
+     "rate_hz": 10.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/overhead",
+     "note": "俯瞰の RGB-D（遅れは 33〜100 ms の一様）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/wrist",
+     "note": "手首の RGB-D（同上）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": true
+    }
+   ],
+   "skill": {
+    "missing": [],
+    "name": "vla",
+    "needs": [
+     "joints",
+     "gripper",
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "note": "今の PolicyRuntime（方策の推論は io.compute、知覚・安全フィルタ・反射は 96 の make のまま）"
+   },
+   "target": "sim",
+   "task": "tidy3_cubes"
+  },
+  "text": "[api] 腕 L2v2（見張り役の出来事で立て直し（VLA、Sonnet 5.5））、タスク tidy3_cubes、sim の感覚で 動ける\n  実行器: api/executor_monitored.MonitoredReplanTaskRuntime（L2 の包み）\n  計画役: planner/decompose_haiku（claude-haiku-5-5）\n  立て直し: planner/replan_event（claude-sonnet-5-5）、event dropped・timeout\n  知覚の口: color\n  技能: vla  needs joints, gripper, camera/overhead, camera/wrist\n  見張り役: grasp_drop  needs gripper, joints, camera/overhead  confirm_s 1.0  camera_confirm True（仮）\n  見張り役: held_estimate_drop  needs gripper, joints, camera/overhead  on_table_s 0.5（仮）\n  感覚:\n    joints           実機 有  模型 有  1000.0 Hz  遅れ 0.000 s  ○\n    gripper          実機 有  模型 有  10.0 Hz  遅れ 0.000 s  ○\n    camera/overhead  実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ○\n    camera/wrist     実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ○"
+ },
+ "L2v2|sim|estimated": {
+  "plan": {
+   "arm": "L2v2",
+   "arm_ja": "見張り役の出来事で立て直し（VLA、Sonnet 5.5）",
+   "executor": "api/executor_monitored.MonitoredReplanTaskRuntime（L2 の包み）",
+   "finder": "estimated",
+   "monitors": {
+    "active": [
+     {
+      "name": "grasp_drop",
+      "needs": [
+       "gripper",
+       "joints",
+       "camera/overhead"
+      ]
+     },
+     {
+      "name": "held_estimate_drop",
+      "needs": [
+       "gripper",
+       "joints",
+       "camera/overhead"
+      ]
+     }
+    ],
+    "params": {
+     "grasp_drop": {
+      "camera_confirm": true,
+      "confirm_s": 1.0
+     },
+     "held_estimate_drop": {
+      "on_table_s": 0.5
+     }
+    },
+    "skipped": []
+   },
+   "planner": "planner/decompose_haiku（claude-haiku-5-5）",
+   "replan": "planner/replan_event（claude-sonnet-5-5）、event dropped・timeout",
+   "runnable": true,
+   "senses": [
+    {
+     "latency_s": 0.0,
+     "name": "joints",
+     "note": "関節の角度・速度・最後の指令 q_d（libfranka の RobotState）",
+     "rate_hz": 1000.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.0,
+     "name": "gripper",
+     "note": "開き幅（2 本の和）と is_grasped。v3_real は 6.5 Hz・遅れ 0.08 s",
+     "rate_hz": 10.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/overhead",
+     "note": "俯瞰の RGB-D（遅れは 33〜100 ms の一様）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/wrist",
+     "note": "手首の RGB-D（同上）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": true
+    }
+   ],
+   "skill": {
+    "missing": [],
+    "name": "vla",
+    "needs": [
+     "joints",
+     "gripper",
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "note": "今の PolicyRuntime（方策の推論は io.compute、知覚・安全フィルタ・反射は 96 の make のまま）"
+   },
+   "target": "sim",
+   "task": "tidy3_cubes"
+  },
+  "text": "[api] 腕 L2v2（見張り役の出来事で立て直し（VLA、Sonnet 5.5））、タスク tidy3_cubes、sim の感覚で 動ける\n  実行器: api/executor_monitored.MonitoredReplanTaskRuntime（L2 の包み）\n  計画役: planner/decompose_haiku（claude-haiku-5-5）\n  立て直し: planner/replan_event（claude-sonnet-5-5）、event dropped・timeout\n  知覚の口: estimated\n  技能: vla  needs joints, gripper, camera/overhead, camera/wrist\n  見張り役: grasp_drop  needs gripper, joints, camera/overhead  confirm_s 1.0  camera_confirm True（仮）\n  見張り役: held_estimate_drop  needs gripper, joints, camera/overhead  on_table_s 0.5（仮）\n  感覚:\n    joints           実機 有  模型 有  1000.0 Hz  遅れ 0.000 s  ○\n    gripper          実機 有  模型 有  10.0 Hz  遅れ 0.000 s  ○\n    camera/overhead  実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ○\n    camera/wrist     実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ○"
+ },
+ "U0|real|color": {
+  "plan": {
+   "arm": "U0",
+   "arm_ja": "立て直しなし（VLA）",
+   "executor": "runtime/executor.TaskRuntime",
+   "finder": null,
+   "monitors": null,
+   "planner": "planner/decompose_haiku（claude-haiku-5-5）",
+   "replan": null,
+   "runnable": false,
+   "senses": [
+    {
+     "latency_s": 0.0,
+     "name": "joints",
+     "note": "関節の角度・速度・最後の指令 q_d（libfranka の RobotState）",
+     "rate_hz": 1000.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.0,
+     "name": "gripper",
+     "note": "開き幅（2 本の和）と is_grasped。v3_real は 6.5 Hz・遅れ 0.08 s",
+     "rate_hz": 10.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/overhead",
+     "note": "俯瞰の RGB-D（遅れは 33〜100 ms の一様）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": false
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/wrist",
+     "note": "手首の RGB-D（同上）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": false
+    }
+   ],
+   "skill": {
+    "missing": [
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "name": "vla",
+    "needs": [
+     "joints",
+     "gripper",
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "note": "今の PolicyRuntime（方策の推論は io.compute、知覚・安全フィルタ・反射は 96 の make のまま）"
+   },
+   "target": "real",
+   "task": "tidy3_cubes"
+  },
+  "text": "[api] 腕 U0（立て直しなし（VLA））、タスク tidy3_cubes、real の感覚で 足りない感覚がある\n  実行器: runtime/executor.TaskRuntime\n  計画役: planner/decompose_haiku（claude-haiku-5-5）\n  立て直し: なし\n  知覚の口: 使わない（今の PolicyRuntime のまま）\n  技能: vla  needs joints, gripper, camera/overhead, camera/wrist  足りない ['camera/overhead', 'camera/wrist']\n  見張り役: なし\n  感覚:\n    joints           実機 有  模型 有  1000.0 Hz  遅れ 0.000 s  ○\n    gripper          実機 有  模型 有  10.0 Hz  遅れ 0.000 s  ○\n    camera/overhead  実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ×\n    camera/wrist     実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ×"
+ },
+ "U0|real|estimated": {
+  "plan": {
+   "arm": "U0",
+   "arm_ja": "立て直しなし（VLA）",
+   "executor": "runtime/executor.TaskRuntime",
+   "finder": null,
+   "monitors": null,
+   "planner": "planner/decompose_haiku（claude-haiku-5-5）",
+   "replan": null,
+   "runnable": false,
+   "senses": [
+    {
+     "latency_s": 0.0,
+     "name": "joints",
+     "note": "関節の角度・速度・最後の指令 q_d（libfranka の RobotState）",
+     "rate_hz": 1000.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.0,
+     "name": "gripper",
+     "note": "開き幅（2 本の和）と is_grasped。v3_real は 6.5 Hz・遅れ 0.08 s",
+     "rate_hz": 10.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/overhead",
+     "note": "俯瞰の RGB-D（遅れは 33〜100 ms の一様）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": false
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/wrist",
+     "note": "手首の RGB-D（同上）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": false
+    }
+   ],
+   "skill": {
+    "missing": [
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "name": "vla",
+    "needs": [
+     "joints",
+     "gripper",
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "note": "今の PolicyRuntime（方策の推論は io.compute、知覚・安全フィルタ・反射は 96 の make のまま）"
+   },
+   "target": "real",
+   "task": "tidy3_cubes"
+  },
+  "text": "[api] 腕 U0（立て直しなし（VLA））、タスク tidy3_cubes、real の感覚で 足りない感覚がある\n  実行器: runtime/executor.TaskRuntime\n  計画役: planner/decompose_haiku（claude-haiku-5-5）\n  立て直し: なし\n  知覚の口: 使わない（今の PolicyRuntime のまま）\n  技能: vla  needs joints, gripper, camera/overhead, camera/wrist  足りない ['camera/overhead', 'camera/wrist']\n  見張り役: なし\n  感覚:\n    joints           実機 有  模型 有  1000.0 Hz  遅れ 0.000 s  ○\n    gripper          実機 有  模型 有  10.0 Hz  遅れ 0.000 s  ○\n    camera/overhead  実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ×\n    camera/wrist     実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ×"
+ },
+ "U0|sim|color": {
+  "plan": {
+   "arm": "U0",
+   "arm_ja": "立て直しなし（VLA）",
+   "executor": "runtime/executor.TaskRuntime",
+   "finder": null,
+   "monitors": null,
+   "planner": "planner/decompose_haiku（claude-haiku-5-5）",
+   "replan": null,
+   "runnable": true,
+   "senses": [
+    {
+     "latency_s": 0.0,
+     "name": "joints",
+     "note": "関節の角度・速度・最後の指令 q_d（libfranka の RobotState）",
+     "rate_hz": 1000.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.0,
+     "name": "gripper",
+     "note": "開き幅（2 本の和）と is_grasped。v3_real は 6.5 Hz・遅れ 0.08 s",
+     "rate_hz": 10.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/overhead",
+     "note": "俯瞰の RGB-D（遅れは 33〜100 ms の一様）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/wrist",
+     "note": "手首の RGB-D（同上）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": true
+    }
+   ],
+   "skill": {
+    "missing": [],
+    "name": "vla",
+    "needs": [
+     "joints",
+     "gripper",
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "note": "今の PolicyRuntime（方策の推論は io.compute、知覚・安全フィルタ・反射は 96 の make のまま）"
+   },
+   "target": "sim",
+   "task": "tidy3_cubes"
+  },
+  "text": "[api] 腕 U0（立て直しなし（VLA））、タスク tidy3_cubes、sim の感覚で 動ける\n  実行器: runtime/executor.TaskRuntime\n  計画役: planner/decompose_haiku（claude-haiku-5-5）\n  立て直し: なし\n  知覚の口: 使わない（今の PolicyRuntime のまま）\n  技能: vla  needs joints, gripper, camera/overhead, camera/wrist\n  見張り役: なし\n  感覚:\n    joints           実機 有  模型 有  1000.0 Hz  遅れ 0.000 s  ○\n    gripper          実機 有  模型 有  10.0 Hz  遅れ 0.000 s  ○\n    camera/overhead  実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ○\n    camera/wrist     実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ○"
+ },
+ "U0|sim|estimated": {
+  "plan": {
+   "arm": "U0",
+   "arm_ja": "立て直しなし（VLA）",
+   "executor": "runtime/executor.TaskRuntime",
+   "finder": null,
+   "monitors": null,
+   "planner": "planner/decompose_haiku（claude-haiku-5-5）",
+   "replan": null,
+   "runnable": true,
+   "senses": [
+    {
+     "latency_s": 0.0,
+     "name": "joints",
+     "note": "関節の角度・速度・最後の指令 q_d（libfranka の RobotState）",
+     "rate_hz": 1000.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.0,
+     "name": "gripper",
+     "note": "開き幅（2 本の和）と is_grasped。v3_real は 6.5 Hz・遅れ 0.08 s",
+     "rate_hz": 10.0,
+     "real": true,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/overhead",
+     "note": "俯瞰の RGB-D（遅れは 33〜100 ms の一様）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": true
+    },
+    {
+     "latency_s": 0.066,
+     "name": "camera/wrist",
+     "note": "手首の RGB-D（同上）。今の実機には無い",
+     "rate_hz": 30.0,
+     "real": false,
+     "sim_model": true,
+     "usable": true
+    }
+   ],
+   "skill": {
+    "missing": [],
+    "name": "vla",
+    "needs": [
+     "joints",
+     "gripper",
+     "camera/overhead",
+     "camera/wrist"
+    ],
+    "note": "今の PolicyRuntime（方策の推論は io.compute、知覚・安全フィルタ・反射は 96 の make のまま）"
+   },
+   "target": "sim",
+   "task": "tidy3_cubes"
+  },
+  "text": "[api] 腕 U0（立て直しなし（VLA））、タスク tidy3_cubes、sim の感覚で 動ける\n  実行器: runtime/executor.TaskRuntime\n  計画役: planner/decompose_haiku（claude-haiku-5-5）\n  立て直し: なし\n  知覚の口: 使わない（今の PolicyRuntime のまま）\n  技能: vla  needs joints, gripper, camera/overhead, camera/wrist\n  見張り役: なし\n  感覚:\n    joints           実機 有  模型 有  1000.0 Hz  遅れ 0.000 s  ○\n    gripper          実機 有  模型 有  10.0 Hz  遅れ 0.000 s  ○\n    camera/overhead  実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ○\n    camera/wrist     実機 無  模型 有  30.0 Hz  遅れ 0.066 s  ○"
+ },
+ "_ARMS": {
+  "CL": "古典の台本（立て直しなし）",
+  "L2v2": "見張り役の出来事で立て直し（VLA、Sonnet 5.5）",
+  "U0": "立て直しなし（VLA）"
+ },
+ "_FILES": [
+  "scripts/api/ladder.py",
+  "configs/tasks/tidy3_cubes.yaml",
+  "src/recovla/api/task_spec.py",
+  "src/recovla/api/senses.py",
+  "src/recovla/api/perception.py",
+  "src/recovla/api/monitors.py",
+  "src/recovla/api/executor_monitored.py",
+  "src/recovla/api/skills.py",
+  "src/recovla/api/skills_script.py",
+  "src/recovla/api/geometry.py",
+  "src/recovla/api/estimated.py",
+  "src/recovla/api/relations.py",
+  "src/recovla/runtime/executor.py",
+  "src/recovla/runtime/executor_replan.py",
+  "src/recovla/runtime/executor_replan_early.py",
+  "src/recovla/runtime/reflex.py",
+  "src/recovla/runtime/runner.py",
+  "src/recovla/runtime/perception.py",
+  "src/recovla/planner/decompose_haiku.py",
+  "src/recovla/planner/replan_base.py",
+  "src/recovla/planner/replan_multi.py",
+  "src/recovla/planner/replan_event.py",
+  "scripts/eval_resumable.py",
+  "scripts/real/eval_real_matched.py",
+  "scripts/real/eval_real_matched_grip.py",
+  "src/recovla/diag/step_reset.py",
+  "src/recovla/diag/return_pose.py",
+  "configs/default.yaml",
+  "configs/v3_real.yaml",
+  "configs/real_v1.yaml"
+ ]
+}

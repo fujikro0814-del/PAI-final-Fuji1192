@@ -1,0 +1,20 @@
+# 立方体 1 個の場面（以前に自作した遠隔操作と記録の道具で使っていた場面）の設定。
+# recovla.common.config.load("g0") で default.yaml の上に重ねる。記録の道具（record/recorder.py・replay.py）と
+# 再生の確認（scripts/replay_check.py）が読む。3 色の場面の評価には使わない。
+
+scene:
+  box: {inner_half: 0.06, success_inner_half: 0.05}   # 立方体 1 個の場面（scene_g0.xml、内寸 12 cm）
+
+g0:
+  scene: assets/mjcf/scene_g0.xml
+  replay_tol_m: 0.005                                          # 再生の確認: 手先 5 mm
+  replay_image_tol: 2                                      # 再生の確認: 画像 ±2（GPU の描画の揺らぎ）
+  instruction: "put the cube in the box"
+  placement:                                                   # 記録の道具の立方体の配置の範囲
+    n: 10
+    x_range: [0.35, 0.55]
+    y_range: [-0.15, 0.05]
+    yaw_half_range_deg: 45
+    min_separation: 0.05
+    train_seed_limit: 3000
+    cube_body: "cube_green"

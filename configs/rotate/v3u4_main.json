@@ -1,0 +1,124 @@
+{
+ "name": "v3u4_main",
+ "experiment": "V3U4",
+ "lanes": 3,
+ "block": 10,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "U0_run1": {
+   "n": 200,
+   "argv": [
+    "scripts/real/u4_ladder.py",
+    "run",
+    "--arm",
+    "U0",
+    "--experiment",
+    "V3U4",
+    "--condition",
+    "U0_run1",
+    "--model",
+    "Rreal",
+    "--trials",
+    "193700:200",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--min-free-gb",
+    "8"
+   ]
+  },
+  "U0_run2": {
+   "n": 200,
+   "argv": [
+    "scripts/real/u4_ladder.py",
+    "run",
+    "--arm",
+    "U0",
+    "--experiment",
+    "V3U4",
+    "--condition",
+    "U0_run2",
+    "--model",
+    "Rreal",
+    "--trials",
+    "193700:200",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--min-free-gb",
+    "8"
+   ]
+  },
+  "L1": {
+   "n": 200,
+   "argv": [
+    "scripts/real/u4_ladder.py",
+    "run",
+    "--arm",
+    "L1",
+    "--experiment",
+    "V3U4",
+    "--condition",
+    "L1",
+    "--model",
+    "Rreal",
+    "--trials",
+    "193700:200",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--min-free-gb",
+    "8"
+   ]
+  },
+  "L2": {
+   "n": 200,
+   "argv": [
+    "scripts/real/u4_ladder.py",
+    "run",
+    "--arm",
+    "L2",
+    "--experiment",
+    "V3U4",
+    "--condition",
+    "L2",
+    "--model",
+    "Rreal",
+    "--trials",
+    "193700:200",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--min-free-gb",
+    "8"
+   ]
+  },
+  "OR": {
+   "n": 200,
+   "argv": [
+    "scripts/real/u4_ladder.py",
+    "run",
+    "--arm",
+    "OR",
+    "--experiment",
+    "V3U4",
+    "--condition",
+    "OR",
+    "--model",
+    "Rreal",
+    "--trials",
+    "193700:200",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--min-free-gb",
+    "8"
+   ]
+  }
+ }
+}

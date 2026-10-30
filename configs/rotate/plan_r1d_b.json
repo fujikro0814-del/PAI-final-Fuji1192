@@ -1,0 +1,65 @@
+{
+ "name": "r1d_b",
+ "experiment": "R1D_B",
+ "lanes": 4,
+ "block": 10,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "Ld": {
+   "n": 50,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "R1D_B",
+    "--arm",
+    "Lf",
+    "--condition",
+    "Ld",
+    "--model",
+    "Rdag",
+    "--model-ckpt",
+    "Rdag=outputs/r1/train/train_Rdags1000_20261021-155742_20261021-155742/checkpoints/040000/pretrained_model",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "171650:50",
+    "--min-free-gb",
+    "8",
+    "--finder",
+    "estimated",
+    "--disturb",
+    "push"
+   ]
+  },
+  "Lf": {
+   "n": 50,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "R1D_B",
+    "--arm",
+    "Lf",
+    "--condition",
+    "Lf",
+    "--model",
+    "Rreal",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "171650:50",
+    "--min-free-gb",
+    "8",
+    "--finder",
+    "estimated",
+    "--disturb",
+    "push"
+   ]
+  }
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "name": "r2de_b3",
+ "experiment": "R2DE_B3",
+ "lanes": 4,
+ "block": 10,
+ "max_lead_blocks": 3,
+ "conditions": {
+  "Udc": {
+   "n": 33,
+   "argv": [
+    "scripts/api/ladder.py",
+    "run",
+    "--experiment",
+    "R2DE_B3",
+    "--arm",
+    "U0",
+    "--condition",
+    "Udc",
+    "--model",
+    "Rdag",
+    "--model-ckpt",
+    "Rdag=outputs/r1/train/train_Rdags1000_20261021-155742_20261021-155742/checkpoints/040000/pretrained_model",
+    "--select-scorer",
+    "outputs/r2c/eval/scorer_run4.pt",
+    "--select-scorer-sha256",
+    "63f1f6aac2231a89a00fd7ac810aadda90d64f9598a9c5c4dc905823a3c6589a",
+    "--select-k",
+    "8",
+    "--grip-debounce",
+    "5",
+    "--step-reset",
+    "home",
+    "--trials",
+    "171867:33",
+    "--min-free-gb",
+    "8"
+   ]
+  }
+ }
+}

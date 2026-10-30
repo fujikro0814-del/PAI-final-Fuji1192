@@ -1,0 +1,41 @@
+# 実機に合わせた段階 3 の世界（v3_real）の重ね。src/recovla/harness/v3_real.py の load_config が読む
+# （生成: v2 の層 + expert_v3 + これ、評価: v2 の層 + これ）。configs/real_v1.yaml の値を使う。
+# 既定の v3（段階 3）の生成・評価はこのファイルを読まない。docs/real/v3_real.md
+v3_real:
+  # 入り・切り（v3_real ではどれも入り。b_slip だけは選んだときだけ）
+  switches:
+    arm_servo: true        # 腕のサーボ: real_v1.arm_servo（重力の補償・速さの先送り 1.0・遅れ 4 手 = 8 ms・kp 2 倍）
+    hand_timing: true      # ハンド: real_v1.gripper（指の動き出しの遅れ 0.15 s、最後の詰め k_pos 9.1 /s）
+    width_sensor: true     # 幅のセンサ: 6.5 Hz で保つ・遅れ 0.08 s。記録の状態と実行系の両方
+    expert_width: true     # 台本の判断（掴んでいるか・指が止まったか）もセンサの幅で
+    closed_fix: true       # 閉じた判定の直し（批判役の I4）: 指令から delay_s までは指が動いているとみなす
+    b_slip: false          # B（運搬中の落下）を、浅く掴んで滑らせる型にする（B8 の結果で決める。既定は切）
+    # 掴みの接触を MuJoCo の標準的な設定に（下の contact_std）。切＝段階 3 と同じ接触。
+    # 10/13 に入りにしたが、10/14 の確かめで、入りでは実機 B7 の 20° が平行にそろわない（斜めのまま挟む）ことが分かり、
+    # 作者の判断で切に戻した（docs/real/real2sim_log.md の 10/14、docs/real/prereg_regen_v1_amend1.md）
+    contact_std: false
+  contact_std:
+    # 指の当て板の衝突の geom（left_finger・right_finger の 6 つずつ）の condim。4 = すべり＋回り止め（係数は既定の 0.005）。
+    # 立方体は 3 のままで、接触は大きい方の 4 になる。摩擦係数・solref・質量・形は変えない
+    pad_condim: 4
+    cone: elliptic         # 摩擦の錐（既定は pyramidal）
+    impratio: 10           # 摩擦と押す力の柔らかさの比（既定 1）。楕円の錐で滑りにくくする
+  width_sensor:
+    # 頻度・雑音・刻みは configs/real_v1.yaml の sensor.gripper（6.5 Hz・1.4e-7 m・6.6e-7 m）
+    # 実機 B1: 届く幅の動き出し 0.23 s − 指の動き出し 0.15 s = 0.08 s（届く値は約 0.08 s 古い）
+    delay_s: 0.08
+  closed_fix:
+    # 指令からこの時間は「指が動いている」とみなす（実機の届く幅の動き出し 中央値 0.23 s = 0.15 + 0.08）。
+    # 静止の時間は、この後から数え始める（閉じた判定 = 指令の時刻 + delay_s + close_settle_s 以降）
+    delay_s: 0.23
+  b_slip:
+    # 当て板と立方体の重なり [m]（当て板の幅の向き＝手の x）。10/13 のシミュレーションの滑り 3.1・3.9 mm を挟む。
+    # 試みごとに注入の乱数（B の u）から一様に引く。向き（+x・−x）も u から。
+    # 試し（種 58760〜58879、向き 7° 以内の 28 本、v3_real）: 2.5 mm は掴みそこね 8・滑り 3、3.0 mm は 5・3、3.5 mm は 1・3。
+    # 滑りは持ち上げた回の 11〜15%（docs/real/v3_real.md）
+    overlap_m: [0.003, 0.004]
+    # 立方体の向き（指に対する、90° の対称性を除いた角）がこれを超える配置では使わない（not_effective / yaw_out_of_range）。
+    # 斜めの立方体を端で閉じると、指が立方体を押し出して掴めない（種 58720〜58759 の試しで |向き| > 7° の 30 本は全部
+    # 掴みそこね）。B8 の実機の置き方は 0°、10/13 の滑りは 7.4°・−5.0°
+    yaw_max_deg: 7.0
+    timeout_s: 20.0        # 発動から確定までの上限

@@ -1,0 +1,91 @@
+<mujoco model="panda_scene_cup_plate">
+  <!-- 別のタスク「カップを皿に置く」の場面（設計書 docs/design/task_api.md の付記「別のタスク: カップを皿に」）。
+       scene_3cube.xml から作った。机・記録用の俯瞰カメラ・発表用カメラ・背景・腕・制御器の目標は scene_3cube.xml と同じで、
+       立方体 3 個と箱の代わりに次の 2 つを置く:
+         1. カップ（体 cup、自由関節）: 上が開いた円筒（取っ手なし）。外径 6 cm・高さ 8 cm・壁 4.5 mm・底 5 mm。底の円板と、
+            輪に並べた細い箱 16 枚の壁。体の原点は底の中心。色は赤（runtime/perception の赤の閾値に入る）。質量 60 g
+         2. 皿（体 plate、机に固定）: 平らな円板。半径 9 cm・厚さ 1.2 cm。体の原点は底の中心。色は黄（箱と同じ）
+       カップと皿は陶器（作者の指定 2026-10-18）: 滑りの摩擦係数 0.5。MuJoCo の接触の係数は 2 つの geom の大きい方なので、
+       机も 0.5 にする（カップと机・カップと皿の組が 0.5）。指は陶器でないので 1.0 のまま（指とカップの組は 1.0）。
+       priority は使わない（priority を上げると接触の固さ solref もカップの既定に替わり、指の当て板の固さ
+       configs/sensor_v1.yaml の finger_pad_solref が効かなくなって、スクリプトの掴みが全部失敗した。2026-10-18 の試し）。
+       値は configs/scenes/cup_plate.yaml の material と同じ（scene.check_cup_plate_geometry で照合する）。
+       カップと皿の位置・向きはここでは仮の値で、試行ごとに recovla.sim.scene.apply_cup_plate_layout が置き直す
+       （皿は固定の体なので model.body_pos を書く）。寸法は configs/scenes/cup_plate.yaml と同じ（tests で照合する）。 -->
+  <option timestep="0.002" gravity="0 0 -9.81">
+    <flag multiccd="enable"/>
+  </option>
+
+  <include file="panda/panda.xml"/>
+  <compiler meshdir="panda/assets"/>
+
+  <visual>
+    <global offwidth="1280" offheight="720"/>
+  </visual>
+
+  <asset>
+    <texture name="bg_sky" type="skybox" builtin="flat" rgb1="0.5 0.5 0.5" rgb2="0.5 0.5 0.5"
+             width="32" height="32"/>
+  </asset>
+
+  <worldbody>
+    <geom name="floor_visual" type="plane" size="3 3 0.1" pos="0 0 -0.1"
+          rgba="0.45 0.45 0.45 1" contype="0" conaffinity="0"/>
+
+    <!-- 記録用の俯瞰カメラ（scene_3cube.xml と同じ。動かさない） -->
+    <camera name="overhead" pos="1.407555 0.05 0.853485"
+            xyaxes="0 1 0 -0.642788 0 0.766044" fovy="45"/>
+
+    <!-- 発表用カメラ（記録しない。scene_3cube.xml と同じ） -->
+    <camera name="presentation" pos="1.2 -0.75 0.75"
+            xyaxes="0.72032 0.693642 0 -0.362773 0.376726 0.852334" fovy="40"/>
+
+    <body name="table" pos="0 0 -0.05">
+      <geom name="table_geom" type="box" size="0.8 0.6 0.05"
+            rgba="0.7 0.7 0.7 1" condim="4" friction="0.5 0.005 0.0001"/>
+    </body>
+
+    <!-- カップ。体の原点は底の中心（机の上に立てて置くと体の z = 0） -->
+    <body name="cup" pos="0.45 -0.10 0">
+      <freejoint name="cup_joint"/>
+      <geom name="cup_base" type="cylinder" size="0.03 0.0025" pos="0 0 0.0025"
+            rgba="1 0 0 1" mass="0.02" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_00" type="box" size="0.00225 0.00597 0.03750" pos="0.027750 0.000000 0.04250" euler="0 0 0.000000" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_01" type="box" size="0.00225 0.00597 0.03750" pos="0.025638 0.010619 0.04250" euler="0 0 0.392699" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_02" type="box" size="0.00225 0.00597 0.03750" pos="0.019622 0.019622 0.04250" euler="0 0 0.785398" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_03" type="box" size="0.00225 0.00597 0.03750" pos="0.010619 0.025638 0.04250" euler="0 0 1.178097" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_04" type="box" size="0.00225 0.00597 0.03750" pos="0.000000 0.027750 0.04250" euler="0 0 1.570796" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_05" type="box" size="0.00225 0.00597 0.03750" pos="-0.010619 0.025638 0.04250" euler="0 0 1.963495" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_06" type="box" size="0.00225 0.00597 0.03750" pos="-0.019622 0.019622 0.04250" euler="0 0 2.356194" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_07" type="box" size="0.00225 0.00597 0.03750" pos="-0.025638 0.010619 0.04250" euler="0 0 2.748894" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_08" type="box" size="0.00225 0.00597 0.03750" pos="-0.027750 0.000000 0.04250" euler="0 0 3.141593" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_09" type="box" size="0.00225 0.00597 0.03750" pos="-0.025638 -0.010619 0.04250" euler="0 0 3.534292" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_10" type="box" size="0.00225 0.00597 0.03750" pos="-0.019622 -0.019622 0.04250" euler="0 0 3.926991" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_11" type="box" size="0.00225 0.00597 0.03750" pos="-0.010619 -0.025638 0.04250" euler="0 0 4.319690" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_12" type="box" size="0.00225 0.00597 0.03750" pos="-0.000000 -0.027750 0.04250" euler="0 0 4.712389" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_13" type="box" size="0.00225 0.00597 0.03750" pos="0.010619 -0.025638 0.04250" euler="0 0 5.105088" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_14" type="box" size="0.00225 0.00597 0.03750" pos="0.019622 -0.019622 0.04250" euler="0 0 5.497787" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+      <geom name="cup_wall_15" type="box" size="0.00225 0.00597 0.03750" pos="0.025638 -0.010619 0.04250" euler="0 0 5.890486" rgba="1 0 0 1" mass="0.0025" friction="0.5 0.005 0.0001"/>
+    </body>
+
+    <!-- 皿。机に固定（自由関節なし）。体の原点は底の中心 -->
+    <body name="plate" pos="0.46 0.24 0">
+      <geom name="plate_geom" type="cylinder" size="0.09 0.006" pos="0 0 0.006"
+            rgba="0.9 0.75 0.2 1" friction="0.5 0.005 0.0001"/>
+    </body>
+
+    <!-- 制御器の目標（描画されない group 5、衝突なし。scene_3cube.xml と同じ） -->
+    <body name="target" mocap="true" pos="0.4 0 0.3">
+      <geom type="sphere" size="0.02" rgba="1 0 0 0.3" group="5"
+            contype="0" conaffinity="0"/>
+    </body>
+  </worldbody>
+
+  <!-- qpos (nq=16): joint1..7, finger_joint1..2, then cup (pos3 + quat4) -->
+  <keyframe>
+    <key name="home"
+         qpos="0 -0.785 0 -2.356 0 1.571 0.785 0.04 0.04
+               0.45 -0.10 0 1 0 0 0"/>
+  </keyframe>
+
+</mujoco>

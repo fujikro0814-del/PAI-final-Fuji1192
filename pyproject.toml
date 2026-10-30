@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "recovla"
+version = "0.1.0"
+description = "最終課題「生成復帰 VLA」: MuJoCo の Franka Panda で 3 色の立方体を片付け、失敗から立て直す SmolVLA"
+requires-python = ">=3.12"
+# 依存はここに書かない。版の固定は env/requirements-lock.txt（env/setup_env.ps1 で入れる）
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+faulthandler_timeout = 300      # 止まったときにスタックを残す
+# 検査の目印。別の環境の既定の実行は -m "not render and not windows and not needs_outputs"
+markers = [
+    "render: 描画の文脈（OpenGL）が要る",
+    "windows: Windows 専用（.tools の git.exe・uv.exe、PowerShell、Windows で測った値との一致）",
+    "needs_outputs: Git 管理外の outputs/ が要る（本構成の PC にだけある）",
+    "torch: torch が要る",
+]

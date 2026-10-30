@@ -1,0 +1,12 @@
+# 今のタスク（赤・緑・青の立方体 3 個を箱へ）を書式で書いたもの（設計書 docs/design/task_api.md 3-1）。
+# 物の並びは今の COLORS（runtime/perception.py・common/seeds.py）の順。読むのは src/recovla/api/task_spec.load_task
+name: tidy3_cubes
+objects:
+  - {name: red,   words: [赤, 赤い立方体], shape: cube, size_m: [0.04, 0.04, 0.04], finder: "color:red"}
+  - {name: green, words: [緑, 緑の立方体], shape: cube, size_m: [0.04, 0.04, 0.04], finder: "color:green"}
+  - {name: blue,  words: [青, 青の立方体], shape: cube, size_m: [0.04, 0.04, 0.04], finder: "color:blue"}
+places:
+  - {name: box, words: [箱], kind: container, finder: "box:v1"}
+goal: {kind: all_in, objects: [red, green, blue], place: box}
+step_vocab: [pick_place]          # 手順の語彙。pick_place(物, 場所)
+instructions: [全部片付けて]

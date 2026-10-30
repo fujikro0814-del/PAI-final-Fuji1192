@@ -1,0 +1,88 @@
+# センサと作動のモデル v1（目標書 v2 の G3・G4。・8、 で直した値）。configs/default.yaml に重ねて読む
+# （config.load("sensor_v1")）。10/3 にタグ sensor-v1 で固定し、以後は評価の途中で変えない（G4）。
+# 【公称】は公式の文書の値、【仮定】は公式の値がなく決めた値。実物の測定はしない。固定の前に、独立に測った論文・技術報告と
+# 照らし、2 倍を超える食い違いは控えめな側（誤差・遅延・雑音が大きい方）を採る。照らした出典は sources に書く。
+sensor_model_version: 1
+
+actuation:
+  # 腕: 関節の位置の指令（1 kHz 相当）を制限層（libfranka の limitRate、目標書 G3 の値 × margin）に通す
+  limiter_margin: 0.99
+  # 腕の関節の位置のサーボに重力の補償を作動器を通して足す（実機の内部の制御器と同じ。 で確認し  で承認）
+  gravity_compensation: true
+  # ハンド（recovla.harness.hand）。把持力は  の 3 で学習用のシード 59000〜59009 で確かめた値
+  # （docs/results/hand_check.json: 30・40・50・70 N で 10/10 成功、めり込み 0.25 mm 以下、指の速さ 0.046 m/s 以下）
+  grasp_force: 40.0             # 指 1 本 [N]。【公称】連続 30〜70 N の中ほど
+  gripper_speed: 0.08           # 開き幅の速さ [m/s]（指 1 本 0.04 m/s）。【公称】上限は指 1 本 0.05 m/s
+  grasp_eps: 0.005              # grasp の許容幅（内・外）[m]。franka_gripper の既定と同じ
+  # 指の当て板の接触（剛さ 30000 N/m、減衰 600 N·s/m）。既定の柔らかさでは 70 N で開き幅が 3.3 cm まで縮んだ。減衰 300 では
+  # 握っている間の接触の揺れで腕のサーボの力の変化が 1000 Nm/s の 6.7 倍になった（学習用のシード 59010〜59029）。600 で 0.7 倍
+  finger_pad_solref: [-30000, -600]
+  # 握る力を 0.2 s かけて上げる（0.05 s では、握った瞬間の接触の揺れで腕のサーボの力の変化が大きくなった）
+  hand: {kv: 10000.0, k_pos: 20.0, move_force: 10.0, ramp_s: 0.2, still_speed: 0.005}
+  # sensor-v1.1: grasp は開き幅 0 の手前 speed/k_pos（4 mm）で減速し、閉じ切ったら指令の速さを 0 にする（harness/hand.py）。
+  # sensor-v1 では空を掴むと指の腹どうしを握る力で押し合わせ、接触が付いたり離れたりして指が震えた。値は変えていない
+
+sensor:
+  frame_hz: 30                  # 【公称】深度・色とも 30 fps
+  cameras:
+    overhead:                   # D455 相当（-1）。位置は場面の overhead カメラ（本当の位置）
+      mount: world
+      model_camera: overhead
+      color: {width: 520, height: 520, fovy: 45.0, out: 256}   # 色 90°×65°・1280×800 の中央 45° の正方形（520 px）を 256 に縮める
+      depth: {width: 848, height: 480, fovy: 56.5}             # 【公称】深度 87°×58°（848×480 で横 87° になる縦の画角）
+      baseline: 0.095           # 【公称】
+      min_z: 0.52               # 【公称】
+      max_z: 6.0                # 【公称】適した範囲の上限
+      depth_unit: 0.001         # 【公称】既定の深度の単位
+      subpixel: 0.08            # 【公称】白書の典型値。独立の測定（Rustler 2025、Ahn 2019 を D455 に換算）とは 2 倍以内
+      # 視差の系統のずれ（試行ごと）σ [px]。公称の Z 精度（<2% at 4 m）を 4σ とみなすと 0.053 px（1.3 m で 2 mm）だが、独立の測定
+      # （Servi 2021、0.5〜1.5 m の系統誤差の標準偏差 4.25 mm）と 2.1 倍食い違うので、控えめな側を採る: 1.0 m で 4.25 mm
+      sys_sigma_px: 0.180
+    wrist:                      # D405 相当。色は深度と同じ撮像素子（: 87°×58° で描き、中央の 58°×58° を切り出す）
+      mount: hand
+      model_camera: wrist
+      color: {width: 848, height: 480, fovy: 58.0, crop: 480, out: 256}
+      depth: {width: 848, height: 480, fovy: 58.0}
+      baseline: 0.018           # 【公称】（代理店の資料。データシートの表で要確認）
+      min_z: 0.07               # 【公称】848×480 で 7 cm
+      max_z: 2.0                # 【仮定】（公称の適した範囲は 7〜50 cm。遠くは雑音の式で大きくなる）
+      depth_unit: 0.0001        # 【公称】D405 の既定 0.1 mm
+      # 公称（±2% at 50 cm を 4σ）と白書の 0.08 では 33 cm で合わせて約 1.5 mm。独立の測定（Henrich 2026、33 cm で 3.28 mm）と
+      # 2.2 倍食い違うので、控えめな側を採る: 雑音と系統のずれをどちらも 2.13 倍にする
+      subpixel: 0.17
+      sys_sigma_px: 0.171
+  depth_noise:
+    # RMS = Z²·subpixel /（f·B）。subpixel はカメラごとに上で与える
+    corr_px: 1.5                # 【仮定】ステレオの照合の窓の分の空間の相関（ガウスでならして σ を保つ）
+    edge_step: 0.02             # 【仮定】深度の段差がこれ以上の縁の 1 px を「空飛ぶ画素」の候補にする
+    edge_prob: 0.5              # 【仮定】
+    # 3×3 の穴が占める画素の割合。公称の充填率 ≥99% からは 1% だが、独立の測定（Kuhlmann 2026 の D435i で有効な画素 90.5%）と
+    # 2 倍を超えて食い違う（この場面の隠れ・範囲外を含めて有効 96%）ので、控えめな側を採る: 有効がおよそ 90% になる値
+    hole_area: 0.06
+  color_noise:
+    read_sigma: 2.0             # 【仮定】読み出しの雑音 [8 bit の値]
+    shot_gain: 0.3              # 【仮定】ショットの雑音の分散 = shot_gain × 輝度
+    exposure_gain: [0.85, 1.15] # 【仮定】試行ごとの露出の倍率（照明のばらつき）
+    white_balance: [0.95, 1.05] # 【仮定】試行ごとのチャネルごとの倍率
+  latency_ms: [33, 100]         # 【仮定】フレームごとに一様に引く（撮った時刻から実行系に届くまで）
+  calibration:
+    # 【仮定】固定カメラの外部パラメータの誤差（軸ごと）。独立の測定（Enebuse 2022、方法により 3〜8 mm・0.5〜2.5°）の最もよい
+    # 方法の値に回転を合わせた（0.4° → 0.5°。実際の設置では最もよい方法を使う前提）
+    overhead: {trans_sigma: 0.004, rot_sigma_deg: 0.5}
+    wrist: {trans_sigma: 0.003, rot_sigma_deg: 0.5}       # 【仮定】hand-eye の誤差（D435i の手首の報告 1.1 mm・0.66° より並進は大きい側）
+    table: {z_sigma: 0.001, tilt_sigma_deg: 0.1}          # 【仮定】
+  joints: {q_sigma: 1.0e-4, dq_sigma: 1.0e-3}             # 【仮定】1 kHz、遅延なし
+  gripper: {rate_hz: 10, width_sigma: 1.0e-4, width_unit: 1.0e-4}   # 【公称】franka_gripper は 10 Hz で読む。雑音と丸めは【仮定】
+  # 照らした独立の出典。見つからなかった項目: 色の雑音・露出と白の釣り合いのばらつき（仮定のまま）、
+  # 空飛ぶ画素、深度の量子化の実効の分解能、D405 の最小距離（公称のまま）
+  sources:
+    - {item: D455 の雑音・系統誤差, ref: "Servi et al., Sensors 21:7770, 2021", url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC8622561/"}
+    - {item: D455 の雑音, ref: "Rustler, Volprecht, Hoffmann, arXiv:2501.07421, 2025", url: "https://arxiv.org/html/2501.07421v1"}
+    - {item: D435 の雑音の式（D455 へ換算）, ref: "Ahn et al., UR 2019", url: "https://ieeexplore.ieee.org/document/8768489/"}
+    - {item: サブピクセルの値（D415、平面からのずれ 1 m で 4.74 mm。非平坦を含むので系統の項で扱う）, ref: "Carfagni et al., Sensors 2019", url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC6387018/"}
+    - {item: D405 の誤差, ref: "Henrich et al., arXiv:2606.13028, 2026", url: "https://arxiv.org/html/2606.13028"}
+    - {item: 有効な画素の割合, ref: "Kuhlmann et al., arXiv:2606.12112, 2026", url: "https://arxiv.org/html/2606.12112"}
+    - {item: 遅延（画面までで 30 fps 中央値 132 ms、表示を含む）, ref: "librealsense issue #4955", url: "https://github.com/IntelRealSense/librealsense/issues/4955"}
+    - {item: 遅延（届いた時刻と時刻印の差、深度 9 ms・色 66 ms）, ref: "librealsense issue #11667", url: "https://github.com/IntelRealSense/librealsense/issues/11667"}
+    - {item: 較正の誤差, ref: "Enebuse et al., PLOS ONE 2022", url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC9581431/"}
+    - {item: 手首の hand-eye（D435i）, ref: "librealsense issue #11736", url: "https://github.com/realsenseai/librealsense/issues/11736"}
